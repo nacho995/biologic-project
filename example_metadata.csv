@@ -1,0 +1,7 @@
+image_path,x,y,z,well_id,condition,timestamp,channel_1,channel_2,channel_3
+images/cell_001.tif,100,200,50,A1,control,2024-01-01,true,false,true
+images/cell_002.tif,150,250,60,A2,treatment,2024-01-01,true,true,false
+images/cell_003.tif,200,300,70,A3,control,2024-01-02,false,true,true
+images/cell_004.tif,250,350,80,B1,treatment,2024-01-02,true,false,false
+images/cell_005.tif,300,400,90,B2,control,2024-01-03,true,true,true
+
