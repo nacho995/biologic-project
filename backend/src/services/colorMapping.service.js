@@ -264,31 +264,68 @@ export class ColorMappingService {
   }
 
   /**
-   * Aplica un colormap a un canal en escala de grises
+   * Aplica un colormap a un canal en escala de grises con transparencia
    * Similar a microshow's pure_red, pure_green, pure_blue colormaps
+   * FILTRADO DE NEGRO: píxeles negros (0) se vuelven transparentes
    */
   async applyColormapToChannel(channelData, width, height, color, contrast = 100) {
     const contrastFactor = contrast / 100;
-    const rgbBuffer = Buffer.alloc(channelData.length * 3);
+    const rgbaBuffer = Buffer.alloc(channelData.length * 4); // RGBA
+    let transparentCount = 0;
+    
+    // THRESHOLD DINÁMICO: Calcular basado en el percentil más bajo
+    // Esto filtra automáticamente el fondo oscuro
+    const sortedSample = [];
+    const sampleSize = Math.min(10000, channelData.length);
+    const step = Math.floor(channelData.length / sampleSize);
+    for (let i = 0; i < channelData.length; i += step) {
+      sortedSample.push(channelData[i]);
+    }
+    sortedSample.sort((a, b) => a - b);
+    
+    // Usar percentil 25 como threshold (los valores más bajos son considerados "fondo")
+    const BLACK_THRESHOLD = sortedSample[Math.floor(sortedSample.length * 0.25)];
+    
+    console.log(`applyColormapToChannel (${color.name}): Using dynamic threshold=${BLACK_THRESHOLD} (25th percentile)`);
+    
+    let minValue = 255, maxValue = 0;
 
     for (let i = 0; i < channelData.length; i++) {
+      const originalValue = channelData[i];
+      minValue = Math.min(minValue, originalValue);
+      maxValue = Math.max(maxValue, originalValue);
+      
+      // FILTRADO DE FONDO: Si el valor <= threshold, hacer TRANSPARENTE
+      if (originalValue <= BLACK_THRESHOLD) {
+        rgbaBuffer[i * 4] = 0;
+        rgbaBuffer[i * 4 + 1] = 0;
+        rgbaBuffer[i * 4 + 2] = 0;
+        rgbaBuffer[i * 4 + 3] = 0; // TRANSPARENTE
+        transparentCount++;
+        continue; // Saltar al siguiente píxel
+      }
+      
+      // Si tiene señal (valor > threshold), aplicar color
       // Normalizar intensidad (0-1)
-      let intensity = channelData[i] / 255;
+      let intensity = originalValue / 255;
       
       // Aplicar contraste
       intensity = Math.max(0, Math.min(1, (intensity - 0.5) * contrastFactor + 0.5));
       
       // Aplicar color
-      rgbBuffer[i * 3] = Math.round(intensity * color.r);
-      rgbBuffer[i * 3 + 1] = Math.round(intensity * color.g);
-      rgbBuffer[i * 3 + 2] = Math.round(intensity * color.b);
+      rgbaBuffer[i * 4] = Math.round(intensity * color.r);
+      rgbaBuffer[i * 4 + 1] = Math.round(intensity * color.g);
+      rgbaBuffer[i * 4 + 2] = Math.round(intensity * color.b);
+      rgbaBuffer[i * 4 + 3] = 255; // OPACO para señal
     }
 
-    return await sharp(rgbBuffer, {
+    console.log(`applyColormapToChannel (${color.name}): ${transparentCount} transparent pixels (value <= ${BLACK_THRESHOLD}) out of ${channelData.length} | min=${minValue}, max=${maxValue}`);
+
+    return await sharp(rgbaBuffer, {
       raw: {
         width,
         height,
-        channels: 3
+        channels: 4 // RGBA
       }
     }).png().toBuffer();
   }
@@ -319,33 +356,78 @@ export class ColorMappingService {
       })
     );
 
-    // Combinar usando blend mode screen (1 - (1-a) * (1-b))
-    // Esto es mejor para overlays de color que suma aditiva
-    const combinedBuffer = Buffer.alloc(width * height * 3);
+    // Combinar con filtrado de negro: suma normalizada con transparencia
+    // Los píxeles negros (valor 0) no contribuyen a la suma
+    const combinedBuffer = Buffer.alloc(width * height * 4); // RGBA para transparencia
+    let transparentPixels = 0;
     
-    for (let i = 0; i < width * height * 3; i++) {
-      let result = 0;
+    // Convertir todas las capas a RGBA
+    const rgbaBuffers = await Promise.all(
+      coloredLayers.map(async (layer, idx) => {
+        const { data, info } = await sharp(layer)
+          .ensureAlpha()
+          .raw()
+          .toBuffer({ resolveWithObject: true });
+        
+        // DEBUG: Contar píxeles transparentes en cada capa
+        let transparentInLayer = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i + 3] === 0) transparentInLayer++;
+        }
+        console.log(`Layer ${idx}: ${transparentInLayer} transparent pixels (alpha=0) out of ${data.length / 4} total pixels`);
+        
+        return data;
+      })
+    );
+    
+    for (let pixelIdx = 0; pixelIdx < width * height; pixelIdx++) {
+      let sumR = 0, sumG = 0, sumB = 0;
+      let count = 0; // Contar cuántas capas tienen señal (no negro)
       
-      // Aplicar blend mode screen a todas las capas
-      for (const layerBuffer of layerBuffers) {
-        if (i < layerBuffer.length) {
-          const value = layerBuffer[i] / 255; // Normalizar a 0-1
-          // Screen blend: 1 - (1-result) * (1-value)
-          result = 1 - (1 - result) * (1 - value);
+      for (const layerBuffer of rgbaBuffers) {
+        const i = pixelIdx * 4;
+        const r = layerBuffer[i];
+        const g = layerBuffer[i + 1];
+        const b = layerBuffer[i + 2];
+        const a = layerBuffer[i + 3];
+        
+        // FILTRADO ESTRICTO: Solo sumar si:
+        // 1. El píxel NO es transparente (a > 0)
+        // 2. Y tiene algún color (r > 0 || g > 0 || b > 0)
+        if (a > 0 && (r > 0 || g > 0 || b > 0)) {
+          sumR += r;
+          sumG += g;
+          sumB += b;
+          count++;
         }
       }
       
-      // Convertir de vuelta a 0-255
-      combinedBuffer[i] = Math.round(result * 255);
+      const outIdx = pixelIdx * 4;
+      
+      if (count > 0) {
+        // NORMALIZACIÓN: dividir por número de imágenes con señal
+        // 2 imágenes con señal: suma/2, 3 imágenes: suma/3
+        combinedBuffer[outIdx] = Math.round(sumR / count);
+        combinedBuffer[outIdx + 1] = Math.round(sumG / count);
+        combinedBuffer[outIdx + 2] = Math.round(sumB / count);
+        combinedBuffer[outIdx + 3] = 255; // Opaco donde hay señal
+      } else {
+        // Si todas las capas son negras o transparentes: resultado = transparente
+        combinedBuffer[outIdx] = 0;
+        combinedBuffer[outIdx + 1] = 0;
+        combinedBuffer[outIdx + 2] = 0;
+        combinedBuffer[outIdx + 3] = 0; // Transparente
+        transparentPixels++;
+      }
     }
 
-    console.log(`Combined ${layerBuffers.length} color layers using screen blend mode`);
+    console.log(`Combined ${layerBuffers.length} color layers: ${transparentPixels} transparent pixels (negro filtrado), normalized by active images`);
 
     return await sharp(combinedBuffer, {
       raw: {
         width,
         height,
-        channels: 3
+        channels: 4 // RGBA
       }
     }).png().toBuffer();
   }
@@ -383,31 +465,79 @@ export class ColorMappingService {
       })
     );
 
-    // Combinar usando suma aditiva (clamped a 255)
-    const combinedBuffer = Buffer.alloc(width * height * 3);
+    // Combinar con filtrado de negro: suma normalizada con transparencia
+    // Los píxeles negros (valor 0) no contribuyen a la suma
+    const combinedBuffer = Buffer.alloc(width * height * 4); // RGBA para transparencia
     let maxSum = 0;
     let minSum = Infinity;
+    let transparentPixels = 0;
     
-    for (let i = 0; i < width * height * 3; i++) {
-      let sum = 0;
-      for (const channelBuffer of channelBuffers) {
-        if (i < channelBuffer.length) {
-          sum += channelBuffer[i];
+    // Convertir todos los canales a RGBA
+    const rgbaBuffers = await Promise.all(
+      coloredChannels.map(async (channel) => {
+        const { data, info } = await sharp(channel)
+          .ensureAlpha()
+          .raw()
+          .toBuffer({ resolveWithObject: true });
+        return data;
+      })
+    );
+    
+    for (let pixelIdx = 0; pixelIdx < width * height; pixelIdx++) {
+      let sumR = 0, sumG = 0, sumB = 0;
+      let count = 0; // Contar cuántos canales tienen señal (no negro)
+      
+      for (const channelBuffer of rgbaBuffers) {
+        const i = pixelIdx * 4;
+        const r = channelBuffer[i];
+        const g = channelBuffer[i + 1];
+        const b = channelBuffer[i + 2];
+        const a = channelBuffer[i + 3];
+        
+        // FILTRADO ESTRICTO: Solo sumar si:
+        // 1. El píxel NO es transparente (a > 0)
+        // 2. Y tiene algún color (r > 0 || g > 0 || b > 0)
+        if (a > 0 && (r > 0 || g > 0 || b > 0)) {
+          sumR += r;
+          sumG += g;
+          sumB += b;
+          count++;
         }
       }
-      maxSum = Math.max(maxSum, sum);
-      minSum = Math.min(minSum, sum);
-      // Clamp a 255
-      combinedBuffer[i] = Math.min(255, sum);
+      
+      const outIdx = pixelIdx * 4;
+      
+      if (count > 0) {
+        // NORMALIZACIÓN: dividir por número de canales con señal
+        // 2 canales con señal: suma/2, 3 canales: suma/3
+        const avgR = Math.round(sumR / count);
+        const avgG = Math.round(sumG / count);
+        const avgB = Math.round(sumB / count);
+        
+        combinedBuffer[outIdx] = Math.min(255, avgR);
+        combinedBuffer[outIdx + 1] = Math.min(255, avgG);
+        combinedBuffer[outIdx + 2] = Math.min(255, avgB);
+        combinedBuffer[outIdx + 3] = 255; // Opaco donde hay señal
+        
+        maxSum = Math.max(maxSum, avgR + avgG + avgB);
+        minSum = Math.min(minSum, avgR + avgG + avgB);
+      } else {
+        // Si todos los canales son negros o transparentes: resultado = transparente
+        combinedBuffer[outIdx] = 0;
+        combinedBuffer[outIdx + 1] = 0;
+        combinedBuffer[outIdx + 2] = 0;
+        combinedBuffer[outIdx + 3] = 0; // Transparente
+        transparentPixels++;
+      }
     }
 
-    console.log(`Combined channels: min sum=${minSum}, max sum=${maxSum}, clamped to 0-255`);
+    console.log(`Combined ${coloredChannels.length} channels: min=${minSum}, max=${maxSum}, ${transparentPixels} transparent pixels (negro filtrado), normalized by active channels`);
 
     return await sharp(combinedBuffer, {
       raw: {
         width,
         height,
-        channels: 3
+        channels: 4 // RGBA
       }
     }).png().toBuffer();
   }

@@ -86,7 +86,16 @@ export const ImageViewer = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
+    <Box 
+      sx={{ 
+        width: '100%', 
+        height: '100%',
+        // Fondo transparente - se verá el azul gradiente del body
+        backgroundColor: 'transparent',
+        // Patrón de tablero para visualizar transparencia (opcional)
+        backgroundImage: 'none',
+      }}
+    >
       <Stage
         width={800}
         height={600}
@@ -94,8 +103,15 @@ export const ImageViewer = () => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onWheel={handleWheel}
+        style={{
+          // IMPORTANTE: Canvas sin fondo - respeta transparencia de PNG
+          backgroundColor: 'transparent',
+        }}
       >
-        <Layer>
+        <Layer
+          // Layer sin clearing - respeta transparencia
+          clearBeforeDraw={true}
+        >
           <KonvaImage
             ref={imageRef}
             image={image}

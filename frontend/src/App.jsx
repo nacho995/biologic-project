@@ -17,7 +17,6 @@ import {
   ViewCarousel as SliderIcon,
   GridView as GridIcon,
   ViewInAr as MultiIcon,
-  Description as CsvIcon,
   PhotoLibrary as ImageManagerIcon,
   Layers as CompositionIcon,
   CloudUpload as UploadIcon,
@@ -31,25 +30,29 @@ import { MetadataPanel } from './components/MetadataPanel/MetadataPanel.jsx';
 import { SliderView } from './components/SliderView/SliderView.jsx';
 import { GridView } from './components/GridView/GridView.jsx';
 import { MultiDimensionalViewer } from './components/MultiDimensionalViewer/MultiDimensionalViewer.jsx';
-import { CSVManager } from './components/CSVManager/CSVManager.jsx';
 import { ImageManager } from './components/ImageManager/ImageManager.jsx';
 import { CompositionPanel } from './components/CompositionPanel/CompositionPanel.jsx';
 import { CompositionCanvas } from './components/CompositionCanvas/CompositionCanvas.jsx';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard/AnalyticsDashboard.jsx';
+import Dashboard from './components/Dashboard/Dashboard.jsx';
+import AppBarComponent from './components/Layout/AppBarComponent.jsx';
+import {
+  Dashboard as DashboardIcon,
+} from '@mui/icons-material';
 
 const navigationItems = [
+  { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
   { id: 'single', label: 'Single View', icon: <ImageIcon /> },
   { id: 'slider', label: 'Slider', icon: <SliderIcon /> },
   { id: 'grid', label: 'Grid View', icon: <GridIcon /> },
   { id: 'multi', label: 'Multi-Dimensional', icon: <MultiIcon /> },
   { id: 'analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
-  { id: 'csv', label: 'CSV Manager', icon: <CsvIcon /> },
   { id: 'images', label: 'Image Manager', icon: <ImageManagerIcon /> },
   { id: 'composition', label: 'Composition', icon: <CompositionIcon /> },
 ];
 
 function App() {
-  const [viewMode, setViewMode] = useState('single');
+  const [viewMode, setViewMode] = useState('dashboard');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -58,96 +61,8 @@ function App() {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#F8F9FA' }}>
-      {/* Top App Bar - Ultra Professional */}
-      <AppBar
-        position="fixed"
-        elevation={0}
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: '#FFFFFF',
-          color: '#1A202C',
-          borderBottom: '1px solid #E5E7EB',
-        }}
-      >
-        <Toolbar
-          sx={{
-            minHeight: { xs: '64px', md: '80px' },
-            px: { xs: 2, sm: 3, md: 4 },
-            justifyContent: 'space-between',
-          }}
-        >
-          {/* Left Section */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography
-              variant="h5"
-              noWrap
-              component="div"
-              sx={{
-                fontWeight: 700,
-                color: '#1E3A5F',
-                fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' },
-                letterSpacing: '-0.02em',
-                display: { xs: 'none', sm: 'block' },
-              }}
-            >
-              Biological Image Visualization
-            </Typography>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{
-                fontWeight: 700,
-                color: '#1E3A5F',
-                fontSize: '1.125rem',
-                letterSpacing: '-0.01em',
-                display: { xs: 'block', sm: 'none' },
-              }}
-            >
-              BioImage
-            </Typography>
-          </Box>
-
-          {/* Right Section - Professional Badge */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              px: { xs: 1.5, sm: 2 },
-              py: { xs: 0.75, sm: 1 },
-              borderRadius: 2,
-              backgroundColor: '#F9FAFB',
-              border: '1px solid #E5E7EB',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                backgroundColor: '#F3F4F6',
-                borderColor: '#D1D5DB',
-              },
-            }}
-          >
-            <UploadIcon
-              sx={{
-                color: '#1E3A5F',
-                fontSize: { xs: 18, sm: 20 },
-              }}
-            />
-            <Typography
-              variant="overline"
-              sx={{
-                color: '#1E3A5F',
-                fontWeight: 600,
-                fontSize: { xs: '0.6875rem', sm: '0.75rem' },
-                letterSpacing: '0.08em',
-                display: { xs: 'none', sm: 'block' },
-              }}
-            >
-              Professional Edition
-            </Typography>
-          </Box>
-        </Toolbar>
-      </AppBar>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <AppBarComponent />
 
 
       {/* Main Content Area */}
@@ -156,9 +71,8 @@ function App() {
         sx={{
           flexGrow: 1,
           width: '100%',
-          mt: { xs: '64px', md: '80px' },
-          backgroundColor: '#F8F9FA',
-          minHeight: { xs: 'calc(100vh - 64px)', md: 'calc(100vh - 80px)' },
+          mt: { xs: '64px', sm: '64px', md: '72px' },
+          minHeight: { xs: 'calc(100vh - 64px)', md: 'calc(100vh - 72px)' },
         }}
       >
         <Container
@@ -170,13 +84,11 @@ function App() {
         >
           {/* Upload Section */}
           <Paper
-            elevation={0}
+            elevation={2}
             sx={{
-              p: { xs: 3, sm: 4 },
-              mb: { xs: 3, sm: 4 },
-              borderRadius: 2,
-              backgroundColor: '#FFFFFF',
-              border: '1px solid rgba(0, 0, 0, 0.06)',
+              p: { xs: 3, sm: 4, md: 5 },
+              mb: { xs: 3, sm: 4, md: 5 },
+              borderRadius: 4,
             }}
           >
             <FileUploader />
@@ -184,27 +96,31 @@ function App() {
 
           {/* Tabs for View Modes */}
           <Paper
-            elevation={0}
+            elevation={2}
             sx={{
-              mb: { xs: 3, sm: 4 },
-              borderRadius: 2,
-              backgroundColor: '#FFFFFF',
-              border: '1px solid rgba(0, 0, 0, 0.06)',
+              mb: { xs: 3, sm: 4, md: 5 },
+              borderRadius: 4,
               overflow: 'hidden',
             }}
           >
             <Tabs
               value={viewMode}
               onChange={(e, newValue) => handleViewModeChange(newValue)}
-              variant={isMobile ? 'scrollable' : 'standard'}
+              variant="scrollable"
               scrollButtons="auto"
+              allowScrollButtonsMobile
               aria-label="view mode selection"
               sx={{
-                borderBottom: '1px solid #E5E7EB',
-                minHeight: { xs: 56, md: 64 },
+                minHeight: { xs: 60, md: 68 },
+                px: { xs: 1, sm: 2 },
                 '& .MuiTabs-scrollButtons': {
+                  opacity: 1,
+                  color: 'primary.main',
                   '&.Mui-disabled': {
                     opacity: 0.3,
+                  },
+                  '&:hover': {
+                    backgroundColor: 'action.hover',
                   },
                 },
               }}
@@ -222,9 +138,6 @@ function App() {
                     minHeight: { xs: 56, md: 64 },
                     px: { xs: 2, sm: 3 },
                     fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-                    '&.Mui-selected': {
-                      color: '#1E3A5F',
-                    },
                   }}
                 />
               ))}
@@ -237,25 +150,28 @@ function App() {
             <Grid
               item
               xs={12}
-              md={viewMode === 'composition' ? 8 : 8}
-              lg={viewMode === 'composition' ? 8 : 8}
+              md={8}
+              lg={8}
+              sx={{
+                order: { xs: 1, md: 1 },
+              }}
             >
               <Paper
-                elevation={0}
+                elevation={2}
                 sx={{
-                  p: { xs: 2, sm: 3, md: 4 },
-                  minHeight: { xs: '400px', sm: '500px', md: '600px' },
-                  borderRadius: 2,
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.06)',
+                  p: { xs: 3, sm: 4, md: 5 },
+                  minHeight: { xs: '450px', sm: '550px', md: '650px' },
+                  borderRadius: 4,
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}
               >
+                {viewMode === 'dashboard' && <Dashboard />}
                 {viewMode === 'single' && <ImageViewer />}
                 {viewMode === 'slider' && <SliderView />}
                 {viewMode === 'grid' && <GridView />}
                 {viewMode === 'multi' && <MultiDimensionalViewer />}
                 {viewMode === 'analytics' && <AnalyticsDashboard />}
-                {viewMode === 'csv' && <CSVManager />}
                 {viewMode === 'images' && <ImageManager />}
                 {viewMode === 'composition' && <CompositionCanvas />}
               </Paper>
@@ -265,8 +181,11 @@ function App() {
             <Grid
               item
               xs={12}
-              md={viewMode === 'composition' ? 4 : 4}
-              lg={viewMode === 'composition' ? 4 : 4}
+              md={4}
+              lg={4}
+              sx={{
+                order: { xs: 2, md: 2 },
+              }}
             >
               <Box
                 sx={{
@@ -289,27 +208,45 @@ function App() {
           </Grid>
         </Container>
 
-        {/* Professional Footer */}
+        {/* Footer */}
         <Box
           component="footer"
           sx={{
             mt: 'auto',
-            py: { xs: 2, sm: 3 },
+            py: { xs: 3, sm: 4 },
             px: { xs: 2, sm: 3, md: 4 },
-            backgroundColor: '#FFFFFF',
-            borderTop: '1px solid #E5E7EB',
+            borderTop: '1px solid',
+            borderColor: 'divider',
             textAlign: 'center',
           }}
         >
           <Typography
             variant="body2"
             sx={{
-              color: '#6B7280',
-              fontWeight: 500,
+              color: 'text.secondary',
+              fontWeight: 600,
               fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+              letterSpacing: '0.02em',
             }}
           >
-            Biological Image Visualization System © {new Date().getFullYear()} | Professional Edition
+            Biological Image Analysis Platform © {new Date().getFullYear()} 
+            <Box 
+              component="span" 
+              sx={{ 
+                mx: 2,
+              }}
+            >
+              •
+            </Box>
+            <Box
+              component="span"
+              sx={{
+                color: 'primary.main',
+                fontWeight: 700,
+              }}
+            >
+              Enterprise Edition
+            </Box>
           </Typography>
         </Box>
       </Box>

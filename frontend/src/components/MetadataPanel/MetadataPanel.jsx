@@ -66,23 +66,25 @@ export const MetadataPanel = () => {
     <Paper
       elevation={0}
       sx={{
-        p: { xs: 2.5, sm: 3, md: 4 },
+        p: { xs: 2.5, sm: 3, md: 3.5 },
         maxHeight: { xs: '400px', sm: '500px', md: '600px' },
         overflow: 'auto',
-        borderRadius: 2,
-        backgroundColor: '#FFFFFF',
-        border: '1px solid rgba(0, 0, 0, 0.06)',
+        borderRadius: 1,
+        backgroundColor: '#0F1419',
+        border: '2px solid #2D3748',
+        boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)',
         '&::-webkit-scrollbar': {
-          width: '6px',
+          width: '8px',
         },
         '&::-webkit-scrollbar-track': {
-          backgroundColor: 'transparent',
+          backgroundColor: '#1A202C',
+          border: '1px solid #2D3748',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-          borderRadius: '3px',
+          backgroundColor: '#4A5568',
+          border: '1px solid #2D3748',
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backgroundColor: '#718096',
           },
         },
       }}
@@ -92,7 +94,9 @@ export const MetadataPanel = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: { xs: 2, sm: 3 },
+          mb: { xs: 2, sm: 2.5 },
+          pb: 1.5,
+          borderBottom: '1px solid #2D3748',
           flexWrap: 'wrap',
           gap: 1,
         }}
@@ -101,69 +105,143 @@ export const MetadataPanel = () => {
           variant="h6"
           sx={{
             fontWeight: 700,
-            color: '#1A202C',
-            fontSize: { xs: '1rem', sm: '1.125rem' },
-            letterSpacing: '-0.01em',
+            color: '#E2E8F0',
+            fontSize: { xs: '0.875rem', sm: '0.9375rem' },
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            fontFamily: 'monospace',
           }}
         >
-          Metadata
+          DATA REGISTRY
         </Typography>
         <Button
           size="small"
-          startIcon={<Download />}
+          startIcon={<Download sx={{ fontSize: '0.875rem' }} />}
           onClick={handleExport}
           disabled={!currentImageMetadata}
           variant="outlined"
           sx={{
-            borderColor: '#DEE2E6',
-            color: '#212529',
+            borderColor: '#2D3748',
+            color: '#E2E8F0',
+            backgroundColor: '#1A202C',
+            fontFamily: 'monospace',
+            fontSize: '0.75rem',
+            px: 1.5,
+            py: 0.5,
+            minWidth: 'auto',
             '&:hover': {
-              borderColor: '#1E3A5F',
-              backgroundColor: '#F8F9FA',
+              borderColor: '#4299E1',
+              backgroundColor: '#2D3748',
+              boxShadow: '0 0 8px rgba(66, 153, 225, 0.3)',
             },
             '&:disabled': {
-              borderColor: '#E9ECEF',
-              color: '#ADB5BD',
+              borderColor: '#2D3748',
+              color: '#4A5568',
+              backgroundColor: '#1A202C',
             },
           }}
         >
-          Export
+          EXPORT
         </Button>
       </Box>
       <TextField
         fullWidth
         size="small"
-        placeholder="Search metadata..."
+        placeholder="SEARCH..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         InputProps={{
-          startAdornment: <Search sx={{ mr: 1, color: '#6C757D' }} />,
+          startAdornment: <Search sx={{ mr: 1, color: '#718096', fontSize: '1rem' }} />,
+          sx: {
+            fontFamily: 'monospace',
+            fontSize: '0.8125rem',
+            color: '#E2E8F0',
+          }
         }}
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': {
-            '&:hover fieldset': {
-              borderColor: '#3498DB',
+            backgroundColor: '#1A202C',
+            border: '2px solid #2D3748',
+            borderRadius: 0.5,
+            '& fieldset': {
+              border: 'none',
             },
+            '&:hover': {
+              borderColor: '#4A5568',
+            },
+            '&.Mui-focused': {
+              borderColor: '#4299E1',
+              boxShadow: '0 0 8px rgba(66, 153, 225, 0.3)',
+            },
+          },
+          '& input::placeholder': {
+            color: '#718096',
+            opacity: 1,
           },
         }}
       />
       {currentImageMetadata ? (
-        <TableContainer>
+        <TableContainer sx={{ 
+          backgroundColor: '#1A202C',
+          border: '2px solid #2D3748',
+          borderRadius: 0.5,
+        }}>
           <Table size="small">
             <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 600, color: '#212529' }}>Field</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: '#212529' }}>Value</TableCell>
+              <TableRow sx={{ backgroundColor: '#0F1419' }}>
+                <TableCell sx={{ 
+                  fontWeight: 700, 
+                  color: '#A0AEC0',
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.05em',
+                  borderBottom: '2px solid #2D3748',
+                  py: 1,
+                }}>
+                  PARAMETER
+                </TableCell>
+                <TableCell sx={{ 
+                  fontWeight: 700, 
+                  color: '#A0AEC0',
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.05em',
+                  borderBottom: '2px solid #2D3748',
+                  py: 1,
+                }}>
+                  VALUE
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredMetadata.map(([key, value]) => (
-                <TableRow key={key}>
-                  <TableCell sx={{ fontWeight: 500, color: '#212529', borderBottom: '1px solid #DEE2E6' }}>
+              {filteredMetadata.map(([key, value], index) => (
+                <TableRow 
+                  key={key}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? '#1A202C' : '#0F1419',
+                    '&:hover': {
+                      backgroundColor: '#2D3748',
+                    },
+                  }}
+                >
+                  <TableCell sx={{ 
+                    fontWeight: 600, 
+                    color: '#E2E8F0',
+                    fontFamily: 'monospace',
+                    fontSize: '0.8125rem',
+                    borderBottom: '1px solid #2D3748',
+                    py: 1.25,
+                  }}>
                     {key}
                   </TableCell>
-                  <TableCell sx={{ color: '#6C757D', borderBottom: '1px solid #DEE2E6' }}>
+                  <TableCell sx={{ 
+                    color: '#4299E1',
+                    fontFamily: 'monospace',
+                    fontSize: '0.8125rem',
+                    borderBottom: '1px solid #2D3748',
+                    py: 1.25,
+                  }}>
                     {String(value)}
                   </TableCell>
                 </TableRow>
@@ -172,9 +250,19 @@ export const MetadataPanel = () => {
           </Table>
         </TableContainer>
       ) : (
-        <Box sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="body2" sx={{ color: '#6C757D' }}>
-            No metadata available
+        <Box sx={{ 
+          textAlign: 'center', 
+          py: 4,
+          backgroundColor: '#1A202C',
+          border: '2px solid #2D3748',
+          borderRadius: 0.5,
+        }}>
+          <Typography variant="body2" sx={{ 
+            color: '#718096',
+            fontFamily: 'monospace',
+            fontSize: '0.8125rem',
+          }}>
+            NO DATA AVAILABLE
           </Typography>
         </Box>
       )}

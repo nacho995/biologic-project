@@ -19,48 +19,69 @@ export const ColorControlPanel = () => {
     <Paper
       elevation={0}
       sx={{
-        p: { xs: 2.5, sm: 3, md: 4 },
+        p: { xs: 2.5, sm: 3, md: 3.5 },
         maxHeight: { xs: '400px', sm: '500px', md: '600px' },
         overflow: 'auto',
-        borderRadius: 2,
-        backgroundColor: '#FFFFFF',
-        border: '1px solid rgba(0, 0, 0, 0.06)',
+        borderRadius: 1,
+        backgroundColor: '#0F1419',
+        border: '2px solid #2D3748',
+        boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)',
         '&::-webkit-scrollbar': {
-          width: '6px',
+          width: '8px',
         },
         '&::-webkit-scrollbar-track': {
-          backgroundColor: 'transparent',
+          backgroundColor: '#1A202C',
+          border: '1px solid #2D3748',
         },
         '&::-webkit-scrollbar-thumb': {
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
-          borderRadius: '3px',
+          backgroundColor: '#4A5568',
+          border: '1px solid #2D3748',
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backgroundColor: '#718096',
           },
         },
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: { xs: 2, sm: 3 } }}>
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: 700,
-            color: '#1A202C',
-            fontSize: { xs: '1rem', sm: '1.125rem' },
-            letterSpacing: '-0.01em',
-          }}
-        >
-          Color Controls
-        </Typography>
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'text.secondary',
-            fontStyle: 'italic'
-          }}
-        >
-          {adjustments.filter(a => a.enabled).length} active
-        </Typography>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: { xs: 2, sm: 2.5 },
+        pb: 1.5,
+        borderBottom: '1px solid #2D3748'
+      }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 700,
+          color: '#E2E8F0',
+          fontSize: { xs: '0.875rem', sm: '0.9375rem' },
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          fontFamily: 'monospace',
+        }}
+      >
+        CHANNEL CONTROL
+      </Typography>
+        <Box sx={{
+          px: 1.5,
+          py: 0.5,
+          backgroundColor: '#1A202C',
+          border: '1px solid #2D3748',
+          borderRadius: 0.5,
+        }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: '#48BB78',
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+            }}
+          >
+            [{adjustments.filter(a => a.enabled).length}/3]
+          </Typography>
+        </Box>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1.5, sm: 2 } }}>
         {COLOR_PALETTE.map((color) => {
@@ -72,58 +93,101 @@ export const ColorControlPanel = () => {
               key={color.id}
               elevation={0}
               sx={{
-                border: '1px solid #E5E7EB',
-                p: { xs: 2, sm: 2.5 },
-                borderRadius: 1.5,
-                backgroundColor: '#FAFBFC',
-                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                border: '2px solid #2D3748',
+                p: { xs: 1.5, sm: 2 },
+                borderRadius: 0.5,
+                background: '#1A202C',
+                boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.3)',
+                transition: 'all 0.15s ease',
                 '&:hover': {
-                  backgroundColor: '#F9FAFB',
-                  borderColor: '#D1D5DB',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+                  borderColor: '#4A5568',
+                  boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 8px rgba(66, 153, 225, 0.2)',
                 },
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                <Chip
-                  label={color.name}
-                  sx={{
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Box sx={{
+                    width: 12,
+                    height: 12,
                     backgroundColor: color.hex,
-                    color: '#fff',
-                    fontWeight: 600,
-                    minWidth: 80,
-                  }}
-                />
+                    border: '2px solid #2D3748',
+                    boxShadow: `0 0 8px ${color.hex}`,
+                  }} />
+                  <Typography
+                    sx={{
+                      color: '#E2E8F0',
+                      fontFamily: 'monospace',
+                      fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+                      fontWeight: 700,
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    {color.name}
+                  </Typography>
+                </Box>
                 <FormControlLabel
                   control={
                     <Switch
                       checked={adjustment.enabled}
                       onChange={() => toggleColor(color.id)}
+                      size="small"
                       sx={{
                         '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#1E3A5F',
+                          color: color.hex,
                         },
                         '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#1E3A5F',
+                          backgroundColor: color.hex,
+                        },
+                        '& .MuiSwitch-track': {
+                          backgroundColor: '#2D3748',
                         },
                       }}
                     />
                   }
                   label={
-                    <Typography variant="body2" sx={{ fontWeight: adjustment.enabled ? 600 : 400 }}>
-                      {adjustment.enabled ? 'Enabled' : 'Disabled'}
+                    <Typography 
+                      variant="caption" 
+                      sx={{ 
+                        fontFamily: 'monospace',
+                        color: adjustment.enabled ? '#48BB78' : '#718096',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {adjustment.enabled ? 'ON' : 'OFF'}
                     </Typography>
                   }
                 />
               </Box>
               {adjustment.enabled && (
-                <Box sx={{ mt: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="caption" sx={{ color: '#6C757D', fontWeight: 500 }}>
-                      Contrast
+                <Box sx={{ 
+                  mt: 1.5, 
+                  pt: 1.5,
+                  borderTop: '1px solid #2D3748',
+                }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    mb: 1,
+                    px: 1,
+                    py: 0.5,
+                    backgroundColor: '#0F1419',
+                    border: '1px solid #2D3748',
+                  }}>
+                    <Typography variant="caption" sx={{ 
+                      color: '#A0AEC0', 
+                      fontFamily: 'monospace',
+                      fontSize: '0.75rem',
+                      letterSpacing: '0.05em',
+                    }}>
+                      CONTRAST
                     </Typography>
-                    <Typography variant="caption" sx={{ color: '#212529', fontWeight: 600 }}>
+                    <Typography variant="caption" sx={{ 
+                      color: color.hex,
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      fontSize: '0.75rem',
+                    }}>
                       {adjustment.contrast}%
                     </Typography>
                   </Box>
@@ -136,17 +200,31 @@ export const ColorControlPanel = () => {
                     valueLabelDisplay="auto"
                     valueLabelFormat={(value) => `${value}%`}
                     sx={{
+                      color: color.hex,
                       '& .MuiSlider-thumb': {
-                        backgroundColor: '#1E3A5F',
+                        width: 16,
+                        height: 16,
+                        backgroundColor: color.hex,
+                        border: '2px solid #2D3748',
+                        boxShadow: `0 0 0 2px #0F1419, 0 0 8px ${color.hex}`,
                         '&:hover': {
-                          boxShadow: '0px 0px 0px 8px rgba(30, 58, 95, 0.16)',
+                          boxShadow: `0 0 0 2px #0F1419, 0 0 12px ${color.hex}`,
                         },
                       },
                       '& .MuiSlider-track': {
-                        backgroundColor: '#1E3A5F',
+                        backgroundColor: color.hex,
+                        border: 'none',
+                        height: 4,
                       },
                       '& .MuiSlider-rail': {
-                        backgroundColor: '#E9ECEF',
+                        backgroundColor: '#2D3748',
+                        height: 4,
+                      },
+                      '& .MuiSlider-valueLabel': {
+                        backgroundColor: '#0F1419',
+                        border: `1px solid ${color.hex}`,
+                        fontFamily: 'monospace',
+                        fontSize: '0.75rem',
                       },
                     }}
                   />

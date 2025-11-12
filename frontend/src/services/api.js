@@ -56,6 +56,9 @@ export const getImageSlice = async (id, axis, index) => {
   return response.data;
 };
 
+// Alias para compatibilidad
+export const getSlice = getImageSlice;
+
 export const getMetadata = async (imageId) => {
   const response = await api.get(`/metadata/${imageId}`);
   return response.data;

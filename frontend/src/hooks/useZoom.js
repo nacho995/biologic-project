@@ -35,8 +35,12 @@ export const useZoom = () => {
 
   const handleWheel = useCallback(
     (event) => {
-      event.preventDefault();
-      const delta = event.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+      // Konva events son diferentes de eventos del navegador
+      const evt = event.evt || event;
+      if (evt && evt.preventDefault) {
+        evt.preventDefault();
+      }
+      const delta = (evt.deltaY || event.deltaY) > 0 ? -ZOOM_STEP : ZOOM_STEP;
       updateViewState({
         zoom: Math.max(
           MIN_ZOOM,

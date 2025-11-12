@@ -91,3 +91,6 @@ echo "curl -X POST ${BASE_URL}/image/process -H \"Content-Type: application/json
 echo "Luego puedes extraer el base64 y usarlo en HTML:"
 echo "<img src=\"data:image/png;base64,...\" />"
 
+
+
+

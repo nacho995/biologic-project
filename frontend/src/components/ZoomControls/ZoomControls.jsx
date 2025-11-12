@@ -13,24 +13,29 @@ export const ZoomControls = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: { xs: 2, sm: 3 },
-        p: { xs: 2.5, sm: 3, md: 4 },
-        borderRadius: 2,
-        backgroundColor: '#FFFFFF',
-        border: '1px solid rgba(0, 0, 0, 0.06)',
+        gap: { xs: 2, sm: 2.5 },
+        p: { xs: 2.5, sm: 3, md: 3.5 },
+        borderRadius: 1,
+        backgroundColor: '#0F1419',
+        border: '2px solid #2D3748',
+        boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)',
       }}
     >
       <Typography
         variant="h6"
         sx={{
           fontWeight: 700,
-          color: '#1A202C',
-          mb: 0.5,
-          fontSize: { xs: '1rem', sm: '1.125rem' },
-          letterSpacing: '-0.01em',
+          color: '#E2E8F0',
+          mb: 1.5,
+          pb: 1.5,
+          borderBottom: '1px solid #2D3748',
+          fontSize: { xs: '0.875rem', sm: '0.9375rem' },
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          fontFamily: 'monospace',
         }}
       >
-        Zoom Controls
+        MAGNIFICATION
       </Typography>
       <Box
         sx={{
@@ -38,31 +43,53 @@ export const ZoomControls = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           p: { xs: 1.5, sm: 2 },
-          backgroundColor: '#F9FAFB',
-          borderRadius: 1.5,
-          mb: 1,
+          backgroundColor: '#1A202C',
+          border: '2px solid #2D3748',
+          borderRadius: 0.5,
+          mb: 1.5,
+          boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.3)',
         }}
       >
         <Typography
           variant="body2"
           sx={{
-            color: '#6B7280',
-            fontWeight: 500,
-            fontSize: { xs: '0.8125rem', sm: '0.875rem' },
-          }}
-        >
-          Current Zoom
-        </Typography>
-        <Typography
-          variant="h6"
-          sx={{
-            color: '#1E3A5F',
+            color: '#A0AEC0',
             fontWeight: 700,
-            fontSize: { xs: '1.125rem', sm: '1.25rem' },
+            fontSize: { xs: '0.75rem', sm: '0.8125rem' },
+            fontFamily: 'monospace',
+            letterSpacing: '0.05em',
           }}
         >
-          {(zoom * 100).toFixed(0)}%
+          LEVEL
         </Typography>
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 0.5,
+        }}>
+          <Typography
+            variant="h4"
+            sx={{
+              color: '#4299E1',
+              fontWeight: 700,
+              fontSize: { xs: '1.5rem', sm: '1.75rem' },
+              fontFamily: 'monospace',
+              textShadow: '0 0 8px rgba(66, 153, 225, 0.5)',
+            }}
+          >
+            {(zoom * 100).toFixed(0)}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: '#718096',
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+            }}
+          >
+            %
+          </Typography>
+        </Box>
       </Box>
       <Box
         sx={{
@@ -75,117 +102,150 @@ export const ZoomControls = () => {
         <Button
           variant="outlined"
           onClick={zoomOut}
-          startIcon={<ZoomOut />}
+          startIcon={<ZoomOut sx={{ fontSize: '1.125rem' }} />}
           fullWidth={isMobile}
           sx={{
             flex: { xs: 'none', sm: 1 },
-            borderColor: '#E5E7EB',
-            color: '#1A202C',
-            fontWeight: 500,
+            borderColor: '#2D3748',
+            backgroundColor: '#1A202C',
+            color: '#E2E8F0',
+            fontWeight: 700,
+            fontFamily: 'monospace',
             py: { xs: 1, sm: 1.25 },
-            fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            fontSize: { xs: '0.75rem', sm: '0.8125rem' },
+            borderRadius: 0.5,
+            transition: 'all 0.15s ease',
             '&:hover': {
-              borderColor: '#1E3A5F',
-              backgroundColor: '#F9FAFB',
-              borderWidth: '1.5px',
-              transform: 'translateY(-1px)',
+              borderColor: '#F56565',
+              backgroundColor: '#2D3748',
+              boxShadow: '0 0 8px rgba(245, 101, 101, 0.3)',
             },
             '&:active': {
-              transform: 'translateY(0)',
+              backgroundColor: '#0F1419',
             },
           }}
         >
-          Zoom Out
+          OUT
         </Button>
         <Button
           variant="outlined"
           onClick={resetZoom}
-          startIcon={<FitScreen />}
+          startIcon={<FitScreen sx={{ fontSize: '1.125rem' }} />}
           fullWidth={isMobile}
           sx={{
             flex: { xs: 'none', sm: 1 },
-            borderColor: '#E5E7EB',
-            color: '#1A202C',
-            fontWeight: 500,
+            borderColor: '#2D3748',
+            backgroundColor: '#1A202C',
+            color: '#E2E8F0',
+            fontWeight: 700,
+            fontFamily: 'monospace',
             py: { xs: 1, sm: 1.25 },
-            fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            fontSize: { xs: '0.75rem', sm: '0.8125rem' },
+            borderRadius: 0.5,
+            transition: 'all 0.15s ease',
             '&:hover': {
-              borderColor: '#1E3A5F',
-              backgroundColor: '#F9FAFB',
-              borderWidth: '1.5px',
-              transform: 'translateY(-1px)',
+              borderColor: '#F6E05E',
+              backgroundColor: '#2D3748',
+              boxShadow: '0 0 8px rgba(246, 224, 94, 0.3)',
             },
             '&:active': {
-              transform: 'translateY(0)',
+              backgroundColor: '#0F1419',
             },
           }}
         >
-          Reset
+          RESET
         </Button>
         <Button
           variant="outlined"
           onClick={zoomIn}
-          startIcon={<ZoomIn />}
+          startIcon={<ZoomIn sx={{ fontSize: '1.125rem' }} />}
           fullWidth={isMobile}
           sx={{
             flex: { xs: 'none', sm: 1 },
-            borderColor: '#E5E7EB',
-            color: '#1A202C',
-            fontWeight: 500,
+            borderColor: '#2D3748',
+            backgroundColor: '#1A202C',
+            color: '#E2E8F0',
+            fontWeight: 700,
+            fontFamily: 'monospace',
             py: { xs: 1, sm: 1.25 },
-            fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            fontSize: { xs: '0.75rem', sm: '0.8125rem' },
+            borderRadius: 0.5,
+            transition: 'all 0.15s ease',
             '&:hover': {
-              borderColor: '#1E3A5F',
-              backgroundColor: '#F9FAFB',
-              borderWidth: '1.5px',
-              transform: 'translateY(-1px)',
+              borderColor: '#48BB78',
+              backgroundColor: '#2D3748',
+              boxShadow: '0 0 8px rgba(72, 187, 120, 0.3)',
             },
             '&:active': {
-              transform: 'translateY(0)',
+              backgroundColor: '#0F1419',
             },
           }}
         >
-          Zoom In
+          IN
         </Button>
       </Box>
-      <Slider
-        value={zoom}
-        min={0.1}
-        max={10}
-        step={0.1}
-        onChange={(_, value) => setZoom(value)}
-        valueLabelDisplay="auto"
-        valueLabelFormat={(value) => `${(value * 100).toFixed(0)}%`}
-        sx={{
-          mt: { xs: 1, sm: 2 },
-          '& .MuiSlider-thumb': {
-            width: { xs: 18, sm: 20 },
-            height: { xs: 18, sm: 20 },
-            backgroundColor: '#1E3A5F',
-            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
-            transition: 'all 0.2s ease',
-            '&:hover': {
-              boxShadow: '0px 4px 8px rgba(30, 58, 95, 0.3)',
-              transform: 'scale(1.1)',
+      <Box sx={{
+        p: 2,
+        backgroundColor: '#1A202C',
+        border: '2px solid #2D3748',
+        borderRadius: 0.5,
+        boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.3)',
+      }}>
+        <Slider
+          value={zoom}
+          min={0.1}
+          max={10}
+          step={0.1}
+          onChange={(_, value) => setZoom(value)}
+          valueLabelDisplay="auto"
+          valueLabelFormat={(value) => `${(value * 100).toFixed(0)}%`}
+          sx={{
+            color: '#4299E1',
+            '& .MuiSlider-thumb': {
+              width: { xs: 16, sm: 18 },
+              height: { xs: 16, sm: 18 },
+              backgroundColor: '#4299E1',
+              border: '2px solid #2D3748',
+              boxShadow: '0 0 0 2px #0F1419, 0 0 12px rgba(66, 153, 225, 0.5)',
+              transition: 'all 0.15s ease',
+              '&:hover': {
+                boxShadow: '0 0 0 2px #0F1419, 0 0 16px rgba(66, 153, 225, 0.8)',
+                transform: 'scale(1.15)',
+              },
             },
-          },
-          '& .MuiSlider-track': {
-            backgroundColor: '#1E3A5F',
-            height: { xs: 4, sm: 6 },
-          },
-          '& .MuiSlider-rail': {
-            backgroundColor: '#E5E7EB',
-            height: { xs: 4, sm: 6 },
-          },
-          '& .MuiSlider-valueLabel': {
-            backgroundColor: '#1E3A5F',
-            fontSize: { xs: '0.75rem', sm: '0.8125rem' },
-          },
-        }}
-      />
+            '& .MuiSlider-track': {
+              backgroundColor: '#4299E1',
+              height: { xs: 3, sm: 4 },
+              border: 'none',
+              boxShadow: '0 0 8px rgba(66, 153, 225, 0.4)',
+            },
+            '& .MuiSlider-rail': {
+              backgroundColor: '#2D3748',
+              height: { xs: 3, sm: 4 },
+            },
+            '& .MuiSlider-valueLabel': {
+              backgroundColor: '#0F1419',
+              border: '1px solid #4299E1',
+              fontFamily: 'monospace',
+              fontSize: { xs: '0.6875rem', sm: '0.75rem' },
+              fontWeight: 700,
+            },
+            '& .MuiSlider-mark': {
+              backgroundColor: '#2D3748',
+              width: 2,
+              height: 8,
+            },
+            '& .MuiSlider-markActive': {
+              backgroundColor: '#4299E1',
+            },
+          }}
+          marks={[
+            { value: 1, label: '' },
+            { value: 2, label: '' },
+            { value: 5, label: '' },
+          ]}
+        />
+      </Box>
     </Box>
   );
 };

@@ -74,10 +74,21 @@ export const CompositionCanvas = () => {
 
   if (sortedLayers.length === 0) {
     return (
-      <Paper sx={{ p: 4, textAlign: 'center', minHeight: '600px' }}>
-        <Typography color="textSecondary">
-          No layers in composition. Add images from Image Manager.
+      <Paper sx={{ p: 4, textAlign: 'center', minHeight: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          No Layers in Composition
         </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          To overlay images:
+        </Typography>
+        <Box sx={{ textAlign: 'left', maxWidth: 400 }}>
+          <Typography variant="body2" color="text.secondary">
+            1️⃣ Go to <strong>Image Manager</strong> tab<br />
+            2️⃣ Click the <strong>+ button</strong> on images<br />
+            3️⃣ Come back here to see them overlaid<br />
+            4️⃣ Use the side panel to adjust opacity & blend modes
+          </Typography>
+        </Box>
       </Paper>
     );
   }

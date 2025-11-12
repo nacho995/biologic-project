@@ -48,31 +48,83 @@ export class ImageProcessorService {
   }
 
   async getImageSlice(imagePath, axis, index) {
-    // This is a simplified implementation
-    // For real 3D image slicing, you'd need specialized libraries like tiff.js or bioformats
-    const image = sharp(imagePath);
-    const metadata = await image.metadata();
+    console.log(`getImageSlice: path=${imagePath}, axis=${axis}, index=${index}`);
+    
+    const imageBuffer = await fs.readFile(imagePath);
+    const metadata = await sharp(imageBuffer).metadata();
+    
+    console.log(`Image metadata: ${metadata.width}x${metadata.height}, pages=${metadata.pages || 1}, format=${metadata.format}`);
 
-    // For Z-axis (multi-page images like TIFF stacks)
-    // Sharp supports multi-page TIFF with the pages property
+    // Para Z-axis (TIFF multi-página)
     if (axis === 'z' && metadata.pages && metadata.pages > 1) {
-      const pageIndex = Math.max(0, Math.min(index, metadata.pages - 1));
-      // Use extract or return specific page if supported
-      // For now, return the full image as Sharp's page() method may not be available in all versions
-      // In production, consider using specialized libraries for 3D image processing
-      return await image.png().toBuffer();
+      const pageIndex = Math.max(0, Math.min(parseInt(index), metadata.pages - 1));
+      console.log(`Extracting Z-slice (page) ${pageIndex} from ${metadata.pages} total pages`);
+      
+      try {
+        // Sharp puede extraer páginas específicas de TIFF multi-página
+        const sliceBuffer = await sharp(imageBuffer, { page: pageIndex })
+          .png()
+          .toBuffer();
+        
+        console.log(`Z-slice ${pageIndex} extracted successfully`);
+        return sliceBuffer;
+      } catch (error) {
+        console.error(`Error extracting Z-slice ${pageIndex}:`, error);
+        // Fallback: retornar la primera página
+        return await sharp(imageBuffer).png().toBuffer();
+      }
     }
 
-    // For X and Y axes, we would need to extract a slice from the image
-    // This is a simplified version that returns the full image
-    // In production, you'd need specialized image processing for 3D volumes
-    if (axis === 'x' || axis === 'y') {
-      // For now, return the full image
-      // TODO: Implement proper slice extraction for X and Y axes using extract()
-      return await image.png().toBuffer();
+    // Para Y-axis: extraer una fila horizontal específica y expandirla
+    if (axis === 'y') {
+      const yIndex = Math.max(0, Math.min(parseInt(index), metadata.height - 1));
+      console.log(`Extracting Y-slice (row) ${yIndex} from height ${metadata.height}`);
+      
+      // Extraer una franja horizontal de 1 píxel de alto, luego escalarla
+      const sliceBuffer = await sharp(imageBuffer)
+        .extract({ 
+          left: 0, 
+          top: yIndex, 
+          width: metadata.width, 
+          height: 1 
+        })
+        .resize(metadata.width, metadata.height, {
+          kernel: 'nearest', // Sin interpolación para mantener valores exactos
+          fit: 'fill'
+        })
+        .png()
+        .toBuffer();
+      
+      console.log(`Y-slice ${yIndex} extracted and scaled`);
+      return sliceBuffer;
     }
 
-    return await image.png().toBuffer();
+    // Para X-axis: extraer una columna vertical específica y expandirla
+    if (axis === 'x') {
+      const xIndex = Math.max(0, Math.min(parseInt(index), metadata.width - 1));
+      console.log(`Extracting X-slice (column) ${xIndex} from width ${metadata.width}`);
+      
+      // Extraer una franja vertical de 1 píxel de ancho, luego escalarla
+      const sliceBuffer = await sharp(imageBuffer)
+        .extract({ 
+          left: xIndex, 
+          top: 0, 
+          width: 1, 
+          height: metadata.height 
+        })
+        .resize(metadata.width, metadata.height, {
+          kernel: 'nearest',
+          fit: 'fill'
+        })
+        .png()
+        .toBuffer();
+      
+      console.log(`X-slice ${xIndex} extracted and scaled`);
+      return sliceBuffer;
+    }
+
+    // Fallback
+    return await sharp(imageBuffer).png().toBuffer();
   }
 }
 

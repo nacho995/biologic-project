@@ -146,6 +146,7 @@ export const deleteImage = async (req, res, next) => {
 };
 
 // Mantener endpoints existentes para compatibilidad
+// MODIFICADO: Siempre aplica filtrado de negro automáticamente
 export const getImage = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -157,33 +158,72 @@ export const getImage = async (req, res, next) => {
       return next(error);
     }
 
-    const ext = image.imagePath.split('.').pop()?.toLowerCase();
+    console.log(`Getting image ${id} with automatic black background filtering`);
+    const imageBuffer = await fileStorage.getFile(image.imagePath);
     
-    // For TIFF files, convert to PNG for browser compatibility
-    if (ext === 'tif' || ext === 'tiff') {
-      console.log(`Converting TIFF to PNG for image ${id}`);
-      const imageBuffer = await fileStorage.getFile(image.imagePath);
-      console.log(`Read TIFF file: ${image.imagePath}, size: ${imageBuffer.length} bytes`);
-      
-      const pngBuffer = await sharp(imageBuffer)
-        .png()
-        .toBuffer();
-      
-      console.log(`Converted to PNG, size: ${pngBuffer.length} bytes`);
-      res.setHeader('Content-Type', 'image/png');
-      res.setHeader('Cache-Control', 'public, max-age=31536000');
-      res.send(pngBuffer);
-    } else {
-      // For other formats (PNG, JPEG, etc.), send directly
-      const imageBuffer = await fileStorage.getFile(image.imagePath);
-      res.setHeader('Content-Type', `image/${ext === 'jpg' ? 'jpeg' : ext}`);
-      res.setHeader('Cache-Control', 'public, max-age=31536000');
-      res.send(imageBuffer);
-    }
+    // SIEMPRE aplicar filtrado de negro con un color neutro (grayscale con transparencia)
+    // Esto asegura que el fondo negro NUNCA se vea
+    const { data, info } = await sharp(imageBuffer)
+      .greyscale()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    
+    // Aplicar filtrado automático de negro (percentil 25)
+    const filteredBuffer = await applyAutoBlackFiltering(data, info.width, info.height);
+    
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    res.send(filteredBuffer);
   } catch (error) {
     console.error('Error in getImage:', error);
     next(error);
   }
+};
+
+// Método auxiliar para filtrar negro automáticamente
+const applyAutoBlackFiltering = async (channelData, width, height) => {
+  const rgbaBuffer = Buffer.alloc(channelData.length * 4); // RGBA
+  
+  // Calcular threshold dinámico (percentil 25)
+  const sortedSample = [];
+  const sampleSize = Math.min(10000, channelData.length);
+  const step = Math.floor(channelData.length / sampleSize);
+  for (let i = 0; i < channelData.length; i += step) {
+    sortedSample.push(channelData[i]);
+  }
+  sortedSample.sort((a, b) => a - b);
+  const BLACK_THRESHOLD = sortedSample[Math.floor(sortedSample.length * 0.25)];
+  
+  let transparentCount = 0;
+  
+  for (let i = 0; i < channelData.length; i++) {
+    const value = channelData[i];
+    
+    // Filtrar fondo negro
+    if (value <= BLACK_THRESHOLD) {
+      rgbaBuffer[i * 4] = 0;
+      rgbaBuffer[i * 4 + 1] = 0;
+      rgbaBuffer[i * 4 + 2] = 0;
+      rgbaBuffer[i * 4 + 3] = 0; // Transparente
+      transparentCount++;
+    } else {
+      // Mantener en escala de grises
+      rgbaBuffer[i * 4] = value;
+      rgbaBuffer[i * 4 + 1] = value;
+      rgbaBuffer[i * 4 + 2] = value;
+      rgbaBuffer[i * 4 + 3] = 255; // Opaco
+    }
+  }
+  
+  console.log(`Auto black filtering: ${transparentCount} transparent pixels (value <= ${BLACK_THRESHOLD}) out of ${channelData.length}`);
+  
+  return await sharp(rgbaBuffer, {
+    raw: {
+      width,
+      height,
+      channels: 4
+    }
+  }).png().toBuffer();
 };
 
 export const getThumbnail = async (req, res, next) => {

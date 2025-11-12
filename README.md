@@ -24,8 +24,10 @@ Sistema profesional de análisis y visualización de imágenes biológicas para 
 
 - **Detección automática de canales**: RGB, Fluorescencia (DAPI, GFP, RFP, CFP, YFP, etc.)
 - **Asignación de colores por canal**: Cada color se puede asignar a un canal específico
-- **Combinación aditiva de canales**: Como ImageJ/FIJI para imágenes multicanal
-- **Blend mode screen**: Para imágenes grayscale con múltiples colores
+- **Combinación aditiva normalizada**: Suma de canales dividida por número de imágenes activas
+- **Filtrado de píxeles negros**: Los píxeles negros (valor 0) no contribuyen a la suma
+- **Normalización inteligente**: Si hay 2 imágenes activas, suma y divide por 2; si hay 3, divide por 3
+- **Manejo de negro**: Si todas las imágenes tienen negro en un píxel, el resultado es 0
 - **12 colores profesionales**: DAPI, FITC/GFP, Texas Red/PE, Cy5, YFP, y más
 - **Ajuste de contraste independiente**: Por color/canal (50-150%)
 
@@ -151,12 +153,16 @@ npm run dev  # Servidor en http://localhost:5173
 #### Para Imágenes Multicanal (RGB, 3+ canales)
 - Cada color se asigna a un canal específico (Ch 0, Ch 1, Ch 2, etc.)
 - Los canales se procesan independientemente
-- Combinación aditiva de canales coloreados
-- Resultado: Visualización tipo ImageJ/FIJI
+- **Combinación normalizada**: Suma de canales dividida por número de imágenes activas
+- **Filtrado de negro**: Píxeles negros (valor 0) no contribuyen a la suma
+- **Ejemplo**: 2 imágenes activas → suma/2; 3 imágenes → suma/3
+- **Negro preservado**: Si todas las imágenes tienen negro en un píxel, resultado = 0
+- Resultado: Visualización tipo ImageJ/FIJI con normalización
 
 #### Para Imágenes Grayscale (1 canal)
 - Múltiples colores se combinan como overlays
-- Blend mode "screen" para mejor visualización
+- **Combinación normalizada**: Suma de colores dividida por número de colores activos
+- **Filtrado de negro**: Píxeles negros (valor 0) no contribuyen a la suma
 - Todos los colores se aplican a la misma imagen base
 
 #### Paleta de Colores (12 colores)

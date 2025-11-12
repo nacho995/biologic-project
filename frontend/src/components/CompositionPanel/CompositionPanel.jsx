@@ -100,9 +100,14 @@ export const CompositionPanel = () => {
       </Box>
 
       {sortedLayers.length === 0 ? (
-        <Typography color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
-          No layers. Add images from Image Manager.
-        </Typography>
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Typography color="textSecondary" gutterBottom>
+            No layers in composition
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Go to "Image Manager" and click the + button on images to add them here
+          </Typography>
+        </Box>
       ) : (
         <List>
           {sortedLayers.map((layer, index) => (

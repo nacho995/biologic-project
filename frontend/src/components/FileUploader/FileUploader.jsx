@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Button, Paper, Typography, LinearProgress } from '@mui/material';
+import { Box, Button, Paper, Typography, LinearProgress, alpha } from '@mui/material';
 import { CloudUpload } from '@mui/icons-material';
 import { uploadCSV, uploadImages, getAllCsvUploads } from '../../services/api.js';
 import { useImageStore } from '../../store/imageStore.js';
@@ -122,7 +122,7 @@ export const FileUploader = () => {
         sx={{
           mb: { xs: 2, sm: 3 },
           fontWeight: 700,
-          color: '#1A202C',
+          color: 'text.primary',
           letterSpacing: '-0.01em',
           fontSize: { xs: '1.25rem', sm: '1.5rem' },
         }}
@@ -143,68 +143,18 @@ export const FileUploader = () => {
           startIcon={<CloudUpload />}
           disabled={uploading}
           size="large"
-          fullWidth={{ xs: true, sm: false }}
+          fullWidth
           sx={{
-            backgroundColor: '#1E3A5F',
-            px: { xs: 2, sm: 3 },
-            py: { xs: 1.25, sm: 1.5 },
-            fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-            fontWeight: 600,
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            '&:hover': {
-              backgroundColor: '#2C5282',
-              transform: 'translateY(-1px)',
-              boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)',
-            },
-            '&:active': {
-              transform: 'translateY(0)',
-            },
-            '&:disabled': {
-              backgroundColor: '#9CA3AF',
-              cursor: 'not-allowed',
-            },
+            px: { xs: 3, sm: 4 },
+            py: { xs: 1.5, sm: 2 },
+            fontSize: { xs: '0.9375rem', sm: '1rem' },
+            fontWeight: 700,
           }}
         >
-          Upload CSV
+          Upload TIFF Images
           <input
             type="file"
-            accept=".csv"
-            hidden
-            onChange={handleCSVUpload}
-          />
-        </Button>
-        <Button
-          variant="contained"
-          component="label"
-          startIcon={<CloudUpload />}
-          disabled={uploading}
-          size="large"
-          fullWidth={{ xs: true, sm: false }}
-          sx={{
-            backgroundColor: '#1E3A5F',
-            px: { xs: 2, sm: 3 },
-            py: { xs: 1.25, sm: 1.5 },
-            fontSize: { xs: '0.875rem', sm: '0.9375rem' },
-            fontWeight: 600,
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            '&:hover': {
-              backgroundColor: '#2C5282',
-              transform: 'translateY(-1px)',
-              boxShadow: '0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06)',
-            },
-            '&:active': {
-              transform: 'translateY(0)',
-            },
-            '&:disabled': {
-              backgroundColor: '#9CA3AF',
-              cursor: 'not-allowed',
-            },
-          }}
-        >
-          Upload Images
-          <input
-            type="file"
-            accept="image/*"
+            accept="image/tiff,image/tif,.tif,.tiff"
             multiple
             hidden
             onChange={handleImageUpload}
@@ -217,7 +167,7 @@ export const FileUploader = () => {
             <Typography
               variant="body2"
               sx={{
-                color: '#4A5568',
+                color: 'text.secondary',
                 fontWeight: 500,
                 fontSize: { xs: '0.8125rem', sm: '0.875rem' },
               }}
@@ -227,7 +177,7 @@ export const FileUploader = () => {
             <Typography
               variant="body2"
               sx={{
-                color: '#1E3A5F',
+                color: 'primary.main',
                 fontWeight: 600,
                 fontSize: { xs: '0.8125rem', sm: '0.875rem' },
               }}
@@ -241,10 +191,10 @@ export const FileUploader = () => {
             sx={{
               height: { xs: 6, sm: 8 },
               borderRadius: 2,
-              backgroundColor: '#E5E7EB',
+              backgroundColor: 'action.disabledBackground',
               '& .MuiLinearProgress-bar': {
                 borderRadius: 2,
-                backgroundColor: '#3498DB',
+                backgroundColor: 'primary.main',
                 transition: 'transform 0.3s ease',
               },
             }}
@@ -256,8 +206,9 @@ export const FileUploader = () => {
           sx={{
             mt: 2,
             p: { xs: 1.5, sm: 2 },
-            backgroundColor: '#FEF2F2',
-            border: '1px solid #FECACA',
+            backgroundColor: (theme) => alpha(theme.palette.error.main, 0.15),
+            border: '1px solid',
+            borderColor: 'error.main',
             borderRadius: 2,
             transition: 'all 0.2s ease',
           }}
@@ -265,7 +216,7 @@ export const FileUploader = () => {
           <Typography
             variant="body2"
             sx={{
-              color: '#DC2626',
+              color: 'error.light',
               fontWeight: 500,
               fontSize: { xs: '0.8125rem', sm: '0.875rem' },
             }}

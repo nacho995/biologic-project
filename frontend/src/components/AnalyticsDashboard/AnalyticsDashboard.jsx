@@ -58,45 +58,45 @@ export const AnalyticsDashboard = () => {
 
   if (!currentImageId) {
     return (
-      <Paper sx={{ p: 4, textAlign: 'center', minHeight: '400px' }}>
+      <Box sx={{ p: 4, textAlign: 'center', minHeight: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <Analytics sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-        <Typography color="textSecondary">
+        <Typography color="text.secondary">
           Select an image to view quantitative analysis
         </Typography>
-      </Paper>
+      </Box>
     );
   }
 
   if (loading) {
     return (
-      <Paper sx={{ p: 4, minHeight: '400px' }}>
+      <Box sx={{ p: 4, minHeight: '400px' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Assessment sx={{ mr: 1 }} />
-          <Typography variant="h6">Loading Quantitative Analysis...</Typography>
+          <Assessment sx={{ mr: 1, color: 'primary.main' }} />
+          <Typography variant="h6" color="text.primary">Loading Quantitative Analysis...</Typography>
         </Box>
         <LinearProgress />
-      </Paper>
+      </Box>
     );
   }
 
   if (!quantitativeData) {
     return (
-      <Paper sx={{ p: 4, textAlign: 'center', minHeight: '400px' }}>
+      <Box sx={{ p: 4, textAlign: 'center', minHeight: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <Analytics sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-        <Typography color="textSecondary" gutterBottom>
+        <Typography color="text.secondary" gutterBottom>
           No quantitative data available for this image
         </Typography>
-        <Typography variant="caption" color="textSecondary">
+        <Typography variant="caption" color="text.secondary">
           Try adjusting colors in the Color Control Panel to generate analysis
         </Typography>
-      </Paper>
+      </Box>
     );
   }
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-        <Analytics sx={{ mr: 1 }} />
+      <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', color: 'text.primary', mb: 3 }}>
+        <Analytics sx={{ mr: 1, color: 'primary.main' }} />
         Quantitative Analysis Dashboard
       </Typography>
 
@@ -105,13 +105,13 @@ export const AnalyticsDashboard = () => {
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                <Biotech sx={{ mr: 1 }} />
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', color: 'text.primary' }}>
+                <Biotech sx={{ mr: 1, color: 'primary.main' }} />
                 Cellular Metrics
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2">Total Cells:</Typography>
+                  <Typography variant="body2" color="text.secondary">Total Cells:</Typography>
                   <Chip
                     label={quantitativeData.cellularMetrics.totalCells.toLocaleString()}
                     size="small"
@@ -119,19 +119,19 @@ export const AnalyticsDashboard = () => {
                   />
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2">Mean Intensity:</Typography>
-                  <Typography variant="body2" fontWeight="bold">
+                  <Typography variant="body2" color="text.secondary">Mean Intensity:</Typography>
+                  <Typography variant="body2" fontWeight="bold" color="text.primary">
                     {quantitativeData.cellularMetrics.meanIntensity.toFixed(2)}
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2">Signal-to-Noise Ratio:</Typography>
-                  <Typography variant="body2" fontWeight="bold">
-                    {quantitativeData.cellularMetrics.signalToNoiseRatio.map(ratio =>
-                      ratio.toFixed(1)
-                    ).join(', ')}
-                  </Typography>
-                </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography variant="body2" color="text.secondary">Signal-to-Noise Ratio:</Typography>
+                      <Typography variant="body2" fontWeight="bold" color="text.primary">
+                        {(quantitativeData.cellularMetrics?.signalToNoiseRatio || []).map(ratio =>
+                          ratio.toFixed(1)
+                        ).join(', ') || 'N/A'}
+                      </Typography>
+                    </Box>
               </Box>
             </CardContent>
           </Card>
@@ -141,13 +141,13 @@ export const AnalyticsDashboard = () => {
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                <HighQuality sx={{ mr: 1 }} />
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', color: 'text.primary' }}>
+                <HighQuality sx={{ mr: 1, color: 'primary.main' }} />
                 Image Quality
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2">Focus Quality:</Typography>
+                  <Typography variant="body2" color="text.secondary">Focus Quality:</Typography>
                   <Chip
                     label={quantitativeData.qualityMetrics.focusQuality}
                     size="small"
@@ -159,7 +159,7 @@ export const AnalyticsDashboard = () => {
                   />
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2">Background Uniformity:</Typography>
+                  <Typography variant="body2" color="text.secondary">Background Uniformity:</Typography>
                   <Chip
                     label={quantitativeData.qualityMetrics.backgroundUniformity}
                     size="small"
@@ -170,14 +170,14 @@ export const AnalyticsDashboard = () => {
                     }
                   />
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body2">Signal Uniformity (CV):</Typography>
-                  <Typography variant="body2" fontWeight="bold">
-                    {quantitativeData.qualityMetrics.signalUniformity.map(cv =>
-                      (cv * 100).toFixed(1) + '%'
-                    ).join(', ')}
-                  </Typography>
-                </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography variant="body2" color="text.secondary">Signal Uniformity (CV):</Typography>
+                      <Typography variant="body2" fontWeight="bold" color="text.primary">
+                        {(quantitativeData.qualityMetrics?.signalUniformity || []).map(cv =>
+                          (cv * 100).toFixed(1) + '%'
+                        ).join(', ') || 'N/A'}
+                      </Typography>
+                    </Box>
               </Box>
             </CardContent>
           </Card>
@@ -187,8 +187,8 @@ export const AnalyticsDashboard = () => {
         <Grid item xs={12}>
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                <Science sx={{ mr: 1 }} />
+              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', color: 'text.primary' }}>
+                <Science sx={{ mr: 1, color: 'primary.main' }} />
                 Channel Analysis
               </Typography>
               <TableContainer>
@@ -204,7 +204,7 @@ export const AnalyticsDashboard = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {quantitativeData.channels.map((channel) => (
+                    {(quantitativeData.channels || []).map((channel) => (
                       <TableRow key={channel.channelIndex}>
                         <TableCell>
                           <Chip label={`Ch ${channel.channelIndex}`} size="small" variant="outlined" />
@@ -253,8 +253,8 @@ export const AnalyticsDashboard = () => {
           <Grid item xs={12}>
             <Card>
               <CardContent>
-                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Timeline sx={{ mr: 1 }} />
+                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', color: 'text.primary' }}>
+                  <Timeline sx={{ mr: 1, color: 'primary.main' }} />
                   Colocalization Analysis
                 </Typography>
                 <Alert severity="info" sx={{ mb: 2 }}>
@@ -314,34 +314,34 @@ export const AnalyticsDashboard = () => {
         <Grid item xs={12}>
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom color="text.primary">
                 Image Metadata
               </Typography>
               <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                 <Box>
                   <Typography variant="body2" color="text.secondary">Dimensions</Typography>
-                  <Typography variant="body1" fontWeight="bold">
+                  <Typography variant="body1" fontWeight="bold" color="text.primary">
                     {quantitativeData.imageMetadata.width} × {quantitativeData.imageMetadata.height}
                   </Typography>
                 </Box>
                 <Box>
                   <Typography variant="body2" color="text.secondary">Channels</Typography>
-                  <Typography variant="body1" fontWeight="bold">
+                  <Typography variant="body1" fontWeight="bold" color="text.primary">
                     {quantitativeData.imageMetadata.channels}
                   </Typography>
                 </Box>
                 <Box>
                   <Typography variant="body2" color="text.secondary">Format</Typography>
-                  <Typography variant="body1" fontWeight="bold">
+                  <Typography variant="body1" fontWeight="bold" color="text.primary">
                     {quantitativeData.imageMetadata.format}
                   </Typography>
                 </Box>
-                <Box>
-                  <Typography variant="body2" color="text.secondary">Active Channels</Typography>
-                  <Typography variant="body1" fontWeight="bold">
-                    {quantitativeData.channels.length}
-                  </Typography>
-                </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">Active Channels</Typography>
+                      <Typography variant="body1" fontWeight="bold" color="text.primary">
+                        {(quantitativeData.channels || []).length}
+                      </Typography>
+                    </Box>
               </Box>
             </CardContent>
           </Card>

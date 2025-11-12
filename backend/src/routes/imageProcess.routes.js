@@ -11,3 +11,6 @@ router.get('/:id/histogram', getImageHistogram);
 
 export default router;
 
+
+
+
