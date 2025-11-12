@@ -113,6 +113,11 @@ export const VolumetricViewer3D = () => {
   // Apply color adjustments based on color store
   const applyColorAdjustments = useCallback((ctx, imageData) => {
     const data = imageData.data;
+    
+    if (!colors || !Array.isArray(colors)) {
+      return imageData;
+    }
+    
     const activeColors = colors.filter(c => c.enabled);
     
     if (activeColors.length === 0) {
@@ -176,7 +181,7 @@ export const VolumetricViewer3D = () => {
     ctx.drawImage(img, x, y, w, h);
     ctx.restore();
     
-    if (colors.some(c => c.enabled)) {
+    if (colors && Array.isArray(colors) && colors.some(c => c.enabled)) {
       const imageData = ctx.getImageData(x, y, w, h);
       const adjustedData = applyColorAdjustments(ctx, imageData);
       ctx.putImageData(adjustedData, x, y);
@@ -260,7 +265,7 @@ export const VolumetricViewer3D = () => {
     
     ctx.restore();
     
-    if (colors.some(c => c.enabled)) {
+    if (colors && Array.isArray(colors) && colors.some(c => c.enabled)) {
       const imageData = ctx.getImageData(x, y, w, h);
       const adjustedData = applyColorAdjustments(ctx, imageData);
       ctx.putImageData(adjustedData, x, y);
