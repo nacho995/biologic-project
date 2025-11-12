@@ -4,12 +4,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
-[English](#english) | [Español](#español)
-
----
-
-## English
-
 ### Overview
 
 A powerful, enterprise-grade web platform for biological and microscopy image analysis. This system provides advanced tools for multi-channel visualization, quantitative analysis, ML-powered segmentation, and comprehensive reporting of TIFF microscopy images.
@@ -225,223 +219,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## Español
-
-### Descripción General
-
-Una plataforma web de nivel empresarial para el análisis de imágenes biológicas y de microscopía. Este sistema proporciona herramientas avanzadas para visualización multicanal, análisis cuantitativo, segmentación basada en ML y generación de informes completos de imágenes de microscopía TIFF.
-
-### ✨ Características Principales
-
-- **🖼️ Soporte Multi-Formato**
-  - Procesamiento de formato TIFF (incluyendo stacks multidimensionales)
-  - Visualización multicanal con mapeo de colores personalizable
-  - Navegación de Z-stack y renderizado volumétrico 3D
-
-- **📊 Análisis Avanzado**
-  - Métricas cuantitativas en tiempo real (intensidad, área, SNR)
-  - Análisis de colocalización de canales
-  - Análisis estadístico con gráficos de distribución
-  - Seguimiento temporal para datos de series temporales
-
-- **🤖 Integración con Machine Learning**
-  - Segmentación automática de células/estructuras
-  - Modelos ML personalizables
-  - Capacidad de procesamiento por lotes
-
-- **🎨 Visualización Profesional**
-  - Canvas interactivo con controles de zoom/pan
-  - Composición de imágenes multicapa con modos de fusión
-  - Ajuste de canales de color y mejora de contraste
-  - Diseño responsive (móvil, tablet, escritorio)
-
-- **📑 Reportes y Exportación**
-  - Generación de informes PDF con resultados de análisis
-  - Exportación de datos en múltiples formatos
-  - Extracción y visualización de metadatos
-
-### 🛠️ Stack Tecnológico
-
-**Frontend**
-- React 18 con Hooks
-- Material-UI (MUI) v5
-- Zustand (gestión de estado)
-- Konva.js (manipulación de canvas)
-- Three.js (visualización 3D)
-- Vite (herramienta de compilación)
-
-**Backend**
-- Node.js 18
-- Express.js
-- Sequelize ORM
-- PostgreSQL 15
-- Sharp (procesamiento de imágenes)
-- Multer (carga de archivos)
-
-**DevOps**
-- Docker & Docker Compose
-- GitHub Actions (CI/CD)
-- Nginx (proxy inverso)
-
-### 📋 Requisitos Previos
-
-- Docker 20.10+
-- Docker Compose 2.0+
-- Node.js 18+ (para desarrollo local)
-- 4GB RAM mínimo
-- 10GB de espacio libre en disco
-
-### 🚀 Inicio Rápido
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/yourusername/biologic-project.git
-   cd biologic-project
-   ```
-
-2. **Configurar variables de entorno**
-   ```bash
-   cp .env.example .env
-   # Editar .env con tus configuraciones
-   ```
-
-3. **Iniciar con Docker Compose**
-   ```bash
-   docker compose up --build
-   ```
-
-4. **Acceder a la aplicación**
-   - Frontend: http://localhost
-   - API Backend: http://localhost:5000
-   - Health check: http://localhost:5000/health
-
-### 💻 Desarrollo Local
-
-**Backend**
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-**Frontend**
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-**Base de Datos**
-```bash
-docker compose up postgres -d
-```
-
-### 🏗️ Estructura del Proyecto
-
-```
-biologic-project/
-├── .github/
-│   └── workflows/          # Pipelines CI/CD
-├── backend/
-│   ├── src/
-│   │   ├── controllers/    # Manejadores de peticiones
-│   │   ├── models/         # Modelos de base de datos
-│   │   ├── routes/         # Rutas API
-│   │   ├── services/       # Lógica de negocio
-│   │   └── middleware/     # Middleware de Express
-│   └── uploads/            # Almacenamiento de archivos
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # Componentes React
-│   │   ├── hooks/          # Hooks personalizados
-│   │   ├── services/       # Clientes API
-│   │   ├── store/          # Gestión de estado
-│   │   └── theme/          # Tema MUI
-│   └── index.html
-├── docker-compose.yml      # Orquestación de servicios
-├── Dockerfile.backend      # Contenedor backend
-├── Dockerfile.frontend     # Contenedor frontend
-└── README.md
-```
-
-### 📚 Documentación de la API
-
-**Subir Imagen**
-```bash
-POST /api/upload
-Content-Type: multipart/form-data
-Body: { images: [File, File, ...] }
-```
-
-**Obtener Todas las Imágenes**
-```bash
-GET /api/images
-Response: { data: [...], count: number }
-```
-
-**Procesar Imagen**
-```bash
-POST /api/image/process
-Body: { imageId: string, operations: [...] }
-```
-
-**Analíticas**
-```bash
-GET /api/images/:id/quantitative
-Response: { metrics: {...}, channels: [...] }
-```
-
-Ver [API.md](./API.md) para documentación completa.
-
-### 🔄 Pipeline CI/CD
-
-Este proyecto utiliza GitHub Actions para integración y despliegue continuo:
-
-- **En Pull Request**: Ejecutar pruebas y linting
-- **En Push a Main**: Construir, probar y desplegar
-- **En Tag**: Crear release y publicar imágenes Docker
-
-Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para instrucciones de despliegue.
-
-### 🧪 Pruebas
-
-```bash
-# Pruebas backend
-cd backend
-npm test
-
-# Pruebas frontend
-cd frontend
-npm test
-
-# Pruebas E2E
-npm run test:e2e
-```
-
-### 🤝 Contribuir
-
-1. Hacer fork del repositorio
-2. Crear tu rama de característica (`git checkout -b feature/CaracteristicaIncreible`)
-3. Commit de tus cambios (`git commit -m 'Agregar alguna CaracteristicaIncreible'`)
-4. Push a la rama (`git push origin feature/CaracteristicaIncreible`)
-5. Abrir un Pull Request
-
-### 📝 Licencia
-
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
-
-### 👥 Autores
-
-- Tu Nombre - [GitHub](https://github.com/yourusername)
-
-### 🙏 Agradecimientos
-
-- Construido con React y Material-UI
-- Impulsado por PostgreSQL
-- Contenerizado con Docker
-
----
-
 ## 📸 Screenshots
 
 ### Dashboard
@@ -467,9 +244,15 @@ Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](L
 ## 📧 Contact
 
 For questions or support, please contact:
-- Email: support@example.com
-- Discord: [Join our server](https://discord.gg/example)
+- Email: support@biologic-analysis.com
+- Privacy: privacy@biologic-analysis.com
+- Legal: legal@biologic-analysis.com
 
----
+## 🔒 Legal & Compliance
 
-**Made with ❤️ for the scientific community**
+- [Privacy Policy](./PRIVACY_POLICY.md)
+- [Terms of Service](./TERMS_OF_SERVICE.md)
+- [Cookie Policy](./COOKIE_POLICY.md)
+- [Compliance & Security](./COMPLIANCE.md)
+
+This platform complies with GDPR, CCPA, and international data protection standards.

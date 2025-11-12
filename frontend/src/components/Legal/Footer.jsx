@@ -138,15 +138,6 @@ export const Footer = () => {
           <Typography variant="body2" color="text.secondary">
             © {currentYear} Biological Analysis Platform. All rights reserved.
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Made with ❤️ for the scientific community
-          </Typography>
-        </Box>
-
-        <Box sx={{ mt: 2, textAlign: 'center' }}>
-          <Typography variant="caption" color="text.secondary">
-            This platform complies with GDPR, HIPAA, and other international data protection regulations.
-          </Typography>
         </Box>
       </Container>
     </Box>

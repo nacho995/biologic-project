@@ -150,53 +150,6 @@ For questions about our use of cookies:
 
 ---
 
-## Versión en Español
-
-## ¿Qué Son las Cookies?
-
-Las cookies son pequeños archivos de texto que se almacenan en su dispositivo cuando visita nuestro sitio web. Nos ayudan a proporcionarle una mejor experiencia al recordar sus preferencias y comprender cómo utiliza nuestra plataforma.
-
-## Tipos de Cookies que Utilizamos
-
-### 1. Cookies Necesarias (Siempre Activas)
-
-Estas cookies son esenciales para que el sitio web funcione correctamente. No se pueden desactivar.
-
-### 2. Cookies Funcionales (Opcionales)
-
-Estas cookies permiten funcionalidades mejoradas y personalización.
-
-### 3. Cookies de Análisis (Opcionales)
-
-Estas cookies nos ayudan a comprender cómo los visitantes interactúan con nuestro sitio web.
-
-### 4. Cookies de Marketing (Opcionales)
-
-Estas cookies se utilizan para ofrecer contenido y anuncios personalizados.
-
-## Cómo Gestionar las Cookies
-
-### Opción 1: Banner de Cookies
-
-Cuando visite nuestro sitio web por primera vez, verá un banner de cookies donde puede:
-- Aceptar todas las cookies
-- Aceptar solo cookies necesarias
-- Personalizar sus preferencias
-
-### Opción 2: Configuración del Navegador
-
-También puede controlar las cookies a través de la configuración de su navegador.
-
-## Contáctenos
-
-Para preguntas sobre nuestro uso de cookies:
-
-**Correo electrónico**: cookies@biologic-analysis.com  
-**Oficial de Privacidad**: privacy@biologic-analysis.com  
-**Soporte**: support@biologic-analysis.com
-
----
-
 ## Compliance
 
 This Cookie Policy complies with:
