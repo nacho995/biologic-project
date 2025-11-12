@@ -124,23 +124,35 @@ export const VolumetricViewer3D = () => {
       return imageData;
     }
 
+    // Create a copy of the original data
+    const originalData = new Uint8ClampedArray(data);
+
     for (let i = 0; i < data.length; i += 4) {
       let r = 0, g = 0, b = 0;
       
       activeColors.forEach(color => {
-        const channelValue = data[i + color.channel];
-        const adjusted = channelValue * (color.contrast / 100);
+        // Get the grayscale value (assuming grayscale input)
+        const grayValue = originalData[i];
         
+        // Apply contrast adjustment
+        const contrastFactor = (color.contrast || 100) / 100;
+        const adjusted = Math.min(255, grayValue * contrastFactor);
+        
+        // Apply color mapping
         const rgb = hexToRgb(color.color);
-        r += (adjusted / 255) * rgb.r;
-        g += (adjusted / 255) * rgb.g;
-        b += (adjusted / 255) * rgb.b;
+        const intensity = adjusted / 255;
+        
+        r += intensity * rgb.r;
+        g += intensity * rgb.g;
+        b += intensity * rgb.b;
       });
       
+      // Apply brightness and clamp values
       data[i] = Math.min(255, r * brightness);
       data[i + 1] = Math.min(255, g * brightness);
       data[i + 2] = Math.min(255, b * brightness);
-      data[i + 3] = data[i + 3] * opacity;
+      // Keep original alpha
+      data[i + 3] = originalData[i + 3];
     }
     
     return imageData;
@@ -339,12 +351,13 @@ export const VolumetricViewer3D = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#FFFFFF',
-          border: '1px solid rgba(0, 0, 0, 0.06)',
+          backgroundColor: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(10px)',
         }}
       >
         <ViewInAr sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-        <Typography variant="h6" color="text.secondary" gutterBottom>
+        <Typography variant="h6" color="text.primary" gutterBottom>
           3D Volumetric Viewer
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -370,14 +383,15 @@ export const VolumetricViewer3D = () => {
         sx={{
           p: 2,
           mb: 2,
-          backgroundColor: '#FFFFFF',
-          border: '1px solid rgba(0, 0, 0, 0.06)',
+          backgroundColor: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backdropFilter: 'blur(10px)',
         }}
       >
         <Stack spacing={2}>
           {/* View Mode Selection */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="subtitle2" fontWeight={600}>
+            <Typography variant="subtitle2" fontWeight={600} color="text.primary">
               Rendering Mode
             </Typography>
             <ToggleButtonGroup
@@ -385,6 +399,17 @@ export const VolumetricViewer3D = () => {
               exclusive
               onChange={(_, newMode) => newMode && setViewMode(newMode)}
               size="small"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  color: 'text.secondary',
+                  borderColor: 'rgba(255, 255, 255, 0.12)',
+                  '&.Mui-selected': {
+                    backgroundColor: 'rgba(33, 150, 243, 0.2)',
+                    color: 'primary.main',
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
             >
               <ToggleButton value="slice">Slice</ToggleButton>
               <ToggleButton value="volume">Volume</ToggleButton>
@@ -577,12 +602,12 @@ export const VolumetricViewer3D = () => {
         sx={{
           p: 2,
           mt: 2,
-          backgroundColor: alpha('#2196F3', 0.05),
-          border: '1px solid rgba(33, 150, 243, 0.12)',
+          backgroundColor: 'rgba(33, 150, 243, 0.08)',
+          border: '1px solid rgba(33, 150, 243, 0.2)',
         }}
       >
-        <Typography variant="caption" color="text.secondary">
-          <strong>Controls:</strong>{' '}
+        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+          <Box component="span" sx={{ fontWeight: 700, color: 'primary.main' }}>Controls:</Box>{' '}
           {viewMode === 'slice' && 'Use slider to navigate through slices | Play/Pause for animation'}
           {viewMode === 'volume' && 'Click and drag to rotate | Scroll or use slider to zoom'}
           {viewMode === 'mip' && 'Click and drag to rotate | Maximum Intensity Projection combines all slices'}
