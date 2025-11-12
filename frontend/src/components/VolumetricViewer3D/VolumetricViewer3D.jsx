@@ -114,45 +114,62 @@ export const VolumetricViewer3D = () => {
   const applyColorAdjustments = useCallback((ctx, imageData) => {
     const data = imageData.data;
     
-    if (!colors || !Array.isArray(colors)) {
-      return imageData;
-    }
-    
-    const activeColors = colors.filter(c => c.enabled);
-    
-    if (activeColors.length === 0) {
-      return imageData;
-    }
-
     // Create a copy of the original data
     const originalData = new Uint8ClampedArray(data);
+    
+    // Calculate BLACK_THRESHOLD (25th percentile of grayscale values)
+    const grayscaleValues = [];
+    for (let i = 0; i < data.length; i += 4) {
+      grayscaleValues.push(originalData[i]); // R channel (assuming grayscale)
+    }
+    grayscaleValues.sort((a, b) => a - b);
+    const BLACK_THRESHOLD = grayscaleValues[Math.floor(grayscaleValues.length * 0.25)];
+    
+    const activeColors = colors && Array.isArray(colors) ? colors.filter(c => c.enabled) : [];
+    const hasActiveColors = activeColors.length > 0;
 
     for (let i = 0; i < data.length; i += 4) {
-      let r = 0, g = 0, b = 0;
+      const grayValue = originalData[i];
       
-      activeColors.forEach(color => {
-        // Get the grayscale value (assuming grayscale input)
-        const grayValue = originalData[i];
-        
-        // Apply contrast adjustment
-        const contrastFactor = (color.contrast || 100) / 100;
-        const adjusted = Math.min(255, grayValue * contrastFactor);
-        
+      // Filter black background (make transparent)
+      if (grayValue <= BLACK_THRESHOLD) {
+        data[i] = 0;
+        data[i + 1] = 0;
+        data[i + 2] = 0;
+        data[i + 3] = 0; // Transparent
+        continue;
+      }
+      
+      if (hasActiveColors) {
         // Apply color mapping
-        const rgb = hexToRgb(color.color);
-        const intensity = adjusted / 255;
+        let r = 0, g = 0, b = 0;
         
-        r += intensity * rgb.r;
-        g += intensity * rgb.g;
-        b += intensity * rgb.b;
-      });
-      
-      // Apply brightness and clamp values
-      data[i] = Math.min(255, r * brightness);
-      data[i + 1] = Math.min(255, g * brightness);
-      data[i + 2] = Math.min(255, b * brightness);
-      // Keep original alpha
-      data[i + 3] = originalData[i + 3];
+        activeColors.forEach(color => {
+          // Apply contrast adjustment
+          const contrastFactor = (color.contrast || 100) / 100;
+          const adjusted = Math.min(255, grayValue * contrastFactor);
+          
+          // Apply color mapping
+          const rgb = hexToRgb(color.color);
+          const intensity = adjusted / 255;
+          
+          r += intensity * rgb.r;
+          g += intensity * rgb.g;
+          b += intensity * rgb.b;
+        });
+        
+        // Apply brightness and clamp values
+        data[i] = Math.min(255, r * brightness);
+        data[i + 1] = Math.min(255, g * brightness);
+        data[i + 2] = Math.min(255, b * brightness);
+        data[i + 3] = 255; // Opaque
+      } else {
+        // No colors active, keep grayscale with brightness
+        data[i] = Math.min(255, grayValue * brightness);
+        data[i + 1] = Math.min(255, grayValue * brightness);
+        data[i + 2] = Math.min(255, grayValue * brightness);
+        data[i + 3] = 255; // Opaque
+      }
     }
     
     return imageData;
@@ -181,23 +198,30 @@ export const VolumetricViewer3D = () => {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Draw to temporary canvas first
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = img.width;
+    tempCanvas.height = img.height;
+    const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    
+    tempCtx.drawImage(img, 0, 0);
+    
+    // Apply color adjustments and black filtering
+    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const adjustedData = applyColorAdjustments(tempCtx, imageData);
+    tempCtx.putImageData(adjustedData, 0, 0);
+    
+    // Draw adjusted image to main canvas with zoom
     const scale = zoom;
-    const w = img.width * scale;
-    const h = img.height * scale;
+    const w = tempCanvas.width * scale;
+    const h = tempCanvas.height * scale;
     const x = (canvas.width - w) / 2;
     const y = (canvas.height - h) / 2;
     
     ctx.save();
-    ctx.filter = `brightness(${brightness}) contrast(${contrast})`;
     ctx.globalAlpha = opacity;
-    ctx.drawImage(img, x, y, w, h);
+    ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, x, y, w, h);
     ctx.restore();
-    
-    if (colors && Array.isArray(colors) && colors.some(c => c.enabled)) {
-      const imageData = ctx.getImageData(x, y, w, h);
-      const adjustedData = applyColorAdjustments(ctx, imageData);
-      ctx.putImageData(adjustedData, x, y);
-    }
   };
 
   // Render Maximum Intensity Projection
@@ -206,50 +230,43 @@ export const VolumetricViewer3D = () => {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Create temporary canvas for MIP computation
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = sliceImages[0].width;
     tempCanvas.height = sliceImages[0].height;
     const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
     
-    sliceImages.forEach((img, idx) => {
+    // Initialize with first image
+    tempCtx.drawImage(sliceImages[0], 0, 0);
+    let mipData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    
+    // Compute maximum intensity projection
+    sliceImages.slice(1).forEach((img) => {
+      tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
       tempCtx.drawImage(img, 0, 0);
       const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
       
-      if (idx === 0) {
-        ctx.putImageData(imageData, 0, 0);
-      } else {
-        const currentData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < imageData.data.length; i += 4) {
-          const maxR = Math.max(currentData.data[i], imageData.data[i]);
-          const maxG = Math.max(currentData.data[i + 1], imageData.data[i + 1]);
-          const maxB = Math.max(currentData.data[i + 2], imageData.data[i + 2]);
-          currentData.data[i] = maxR;
-          currentData.data[i + 1] = maxG;
-          currentData.data[i + 2] = maxB;
-        }
-        ctx.putImageData(currentData, 0, 0);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        mipData.data[i] = Math.max(mipData.data[i], imageData.data[i]);
+        mipData.data[i + 1] = Math.max(mipData.data[i + 1], imageData.data[i + 1]);
+        mipData.data[i + 2] = Math.max(mipData.data[i + 2], imageData.data[i + 2]);
       }
     });
     
-    const scale = zoom;
-    const finalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Apply color adjustments and black filtering
+    const adjustedData = applyColorAdjustments(tempCtx, mipData);
+    tempCtx.putImageData(adjustedData, 0, 0);
     
+    // Draw to main canvas with zoom
+    const scale = zoom;
     const w = tempCanvas.width * scale;
     const h = tempCanvas.height * scale;
     const x = (canvas.width - w) / 2;
     const y = (canvas.height - h) / 2;
     
     ctx.save();
-    ctx.filter = `brightness(${brightness}) contrast(${contrast})`;
     ctx.globalAlpha = opacity;
-    
-    const scaledCanvas = document.createElement('canvas');
-    scaledCanvas.width = tempCanvas.width;
-    scaledCanvas.height = tempCanvas.height;
-    const scaledCtx = scaledCanvas.getContext('2d');
-    scaledCtx.putImageData(finalImage, 0, 0);
-    ctx.drawImage(scaledCanvas, x, y, w, h);
+    ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, x, y, w, h);
     ctx.restore();
   };
 
@@ -259,29 +276,36 @@ export const VolumetricViewer3D = () => {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Create temporary canvas for compositing
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = sliceImages[0].width;
+    tempCanvas.height = sliceImages[0].height;
+    const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+    
+    const alphaPerSlice = opacity / sliceImages.length;
+    
+    // Composite all slices
+    sliceImages.forEach((img) => {
+      tempCtx.globalAlpha = alphaPerSlice * 2;
+      tempCtx.drawImage(img, 0, 0);
+    });
+    
+    // Apply color adjustments and black filtering
+    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const adjustedData = applyColorAdjustments(tempCtx, imageData);
+    tempCtx.putImageData(adjustedData, 0, 0);
+    
+    // Draw to main canvas with zoom
     const scale = zoom;
-    const w = sliceImages[0].width * scale;
-    const h = sliceImages[0].height * scale;
+    const w = tempCanvas.width * scale;
+    const h = tempCanvas.height * scale;
     const x = (canvas.width - w) / 2;
     const y = (canvas.height - h) / 2;
     
     ctx.save();
-    ctx.filter = `brightness(${brightness}) contrast(${contrast})`;
-    
-    const alphaPerSlice = opacity / sliceImages.length;
-    
-    sliceImages.forEach((img, idx) => {
-      ctx.globalAlpha = alphaPerSlice * 2;
-      ctx.drawImage(img, x, y, w, h);
-    });
-    
+    ctx.globalAlpha = 1;
+    ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, x, y, w, h);
     ctx.restore();
-    
-    if (colors && Array.isArray(colors) && colors.some(c => c.enabled)) {
-      const imageData = ctx.getImageData(x, y, w, h);
-      const adjustedData = applyColorAdjustments(ctx, imageData);
-      ctx.putImageData(adjustedData, x, y);
-    }
   };
 
   // Auto-play slices
