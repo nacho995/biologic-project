@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Button, Paper, Typography, LinearProgress, alpha } from '@mui/material';
+import { Box, Button, Paper, Typography, LinearProgress, alpha, Snackbar, Alert } from '@mui/material';
 import { CloudUpload } from '@mui/icons-material';
 import { uploadImages } from '../../services/api.js';
 import { useImageStore } from '../../store/imageStore.js';
@@ -8,6 +8,7 @@ export const FileUploader = () => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const { setImages, addImage, setCurrentImage } = useImageStore();
 
   const handleImageUpload = useCallback(
@@ -49,12 +50,20 @@ export const FileUploader = () => {
           setCurrentImage(firstImage.id);
         }
         console.log(`Successfully uploaded ${result.images.length} images`);
-        alert(`Successfully uploaded ${result.images.length} image(s)!`);
+        setSnackbar({
+          open: true,
+          message: `Successfully uploaded ${result.images.length} image(s)!`,
+          severity: 'success'
+        });
       } catch (err) {
         console.error('Image upload error:', err);
         const errorMessage = err instanceof Error ? err.message : 'Upload failed';
         setError(errorMessage);
-        alert(`Error uploading images: ${errorMessage}`); // Temporary alert for debugging
+        setSnackbar({
+          open: true,
+          message: `Error uploading images: ${errorMessage}`,
+          severity: 'error'
+        });
       } finally {
         setUploading(false);
       }
@@ -173,6 +182,22 @@ export const FileUploader = () => {
           </Typography>
         </Box>
       )}
+      
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogActions,
   Alert,
+  Snackbar,
 } from '@mui/material';
 import { Delete, Add, Visibility } from '@mui/icons-material';
 import { getAllImages, deleteImage } from '../../services/api.js';
@@ -25,6 +26,7 @@ export const ImageManager = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, image: null });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const { addLayer } = useCompositionStore();
   const { setCurrentImage, setImages: setStoreImages } = useImageStore();
 
@@ -64,7 +66,11 @@ export const ImageManager = () => {
 
   const handleAddToComposition = (imageId, imageName) => {
     addLayer(imageId);
-    alert(`✅ "${imageName}" added to composition!\n\nGo to "Composition" tab to see it overlaid.`);
+    setSnackbar({
+      open: true,
+      message: `"${imageName}" added to composition! Go to "Composition" tab to see it overlaid.`,
+      severity: 'success'
+    });
   };
 
   const handleDelete = async () => {
@@ -72,9 +78,18 @@ export const ImageManager = () => {
       await deleteImage(deleteDialog.image.id);
       await loadImages();
       setDeleteDialog({ open: false, image: null });
+      setSnackbar({
+        open: true,
+        message: 'Image deleted successfully',
+        severity: 'success'
+      });
     } catch (error) {
       console.error('Error deleting image:', error);
-      alert('Error deleting image: ' + error.message);
+      setSnackbar({
+        open: true,
+        message: `Error deleting image: ${error.message}`,
+        severity: 'error'
+      });
     }
   };
 
@@ -254,6 +269,22 @@ export const ImageManager = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

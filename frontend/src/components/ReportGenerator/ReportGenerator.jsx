@@ -12,7 +12,8 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Snackbar
 } from '@mui/material';
 import { PictureAsPdf, Download, Preview } from '@mui/icons-material';
 import jsPDF from 'jspdf';
@@ -28,6 +29,7 @@ export const ReportGenerator = () => {
     appendices: false
   });
   const [generating, setGenerating] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const handleSectionToggle = (section) => {
@@ -93,9 +95,19 @@ export const ReportGenerator = () => {
 
       // Save PDF
       doc.save('biological_analysis_report.pdf');
+      
+      setSnackbar({
+        open: true,
+        message: 'PDF report generated successfully!',
+        severity: 'success'
+      });
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
+      setSnackbar({
+        open: true,
+        message: 'Error generating PDF. Please try again.',
+        severity: 'error'
+      });
     } finally {
       setGenerating(false);
     }
@@ -219,6 +231,22 @@ export const ReportGenerator = () => {
           <Button onClick={() => setPreviewOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
+      
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 };

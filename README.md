@@ -1,607 +1,475 @@
 # 🔬 Biological Image Analysis Platform
 
-Sistema profesional de análisis y visualización de imágenes biológicas para laboratorios de investigación. Plataforma enterprise-grade con capacidades avanzadas de procesamiento multicanal, análisis cuantitativo, segmentación con IA, y generación de reportes científicos.
+[![CI/CD](https://github.com/yourusername/biologic-project/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/yourusername/biologic-project/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+
+[English](#english) | [Español](#español)
 
 ---
 
-## 📋 Tabla de Contenidos
+## English
 
-- [Características Principales](#-características-principales)
-- [Stack Tecnológico](#-stack-tecnológico)
-- [Instalación y Uso](#-instalación-y-uso)
-- [Funcionalidades Detalladas](#-funcionalidades-detalladas)
-- [API Documentation](#-api-documentation)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Configuración](#-configuración)
-- [Testing](#-testing)
-- [Deployment](#-deployment)
+### Overview
 
----
+A powerful, enterprise-grade web platform for biological and microscopy image analysis. This system provides advanced tools for multi-channel visualization, quantitative analysis, ML-powered segmentation, and comprehensive reporting of TIFF microscopy images.
 
-## 🚀 Características Principales
+### ✨ Key Features
 
-### 🎨 Visualización Multicanal Profesional
+- **🖼️ Multi-Format Image Support**
+  - TIFF format processing (including multi-dimensional stacks)
+  - Multi-channel visualization with customizable color mapping
+  - Z-stack navigation and 3D volume rendering
 
-- **Detección automática de canales**: RGB, Fluorescencia (DAPI, GFP, RFP, CFP, YFP, etc.)
-- **Asignación de colores por canal**: Cada color se puede asignar a un canal específico
-- **Combinación aditiva normalizada**: Suma de canales dividida por número de imágenes activas
-- **Filtrado de píxeles negros**: Los píxeles negros (valor 0) no contribuyen a la suma
-- **Normalización inteligente**: Si hay 2 imágenes activas, suma y divide por 2; si hay 3, divide por 3
-- **Manejo de negro**: Si todas las imágenes tienen negro en un píxel, el resultado es 0
-- **12 colores profesionales**: DAPI, FITC/GFP, Texas Red/PE, Cy5, YFP, y más
-- **Ajuste de contraste independiente**: Por color/canal (50-150%)
+- **📊 Advanced Analysis**
+  - Real-time quantitative metrics (intensity, area, SNR)
+  - Channel colocalization analysis
+  - Statistical analysis with distribution plots
+  - Temporal tracking for time-series data
 
-### 📊 Análisis Cuantitativo Avanzado
+- **🤖 Machine Learning Integration**
+  - Automated cell/structure segmentation
+  - Customizable ML models
+  - Batch processing capabilities
 
-- **Estadísticas por canal**: Media, desviación estándar, S/N ratio, rango dinámico
-- **Análisis de colocalización**: Coeficiente de Pearson entre canales
-- **Métricas celulares**: Conteo estimado, intensidad media, área cubierta
-- **Calidad de imagen**: Evaluación de foco, uniformidad de fondo
-- **Dashboard analítico**: Visualización en tiempo real de todas las métricas
+- **🎨 Professional Visualization**
+  - Interactive canvas with zoom/pan controls
+  - Multi-layer image composition with blend modes
+  - Color channel adjustment and contrast enhancement
+  - Responsive design (mobile, tablet, desktop)
 
-### 🤖 Segmentación con Machine Learning
+- **📑 Reporting & Export**
+  - PDF report generation with analysis results
+  - Data export in multiple formats
+  - Metadata extraction and display
 
-- **Múltiples modelos**: CellPose, StarDist, U-Net, Mask R-CNN
-- **Métricas por célula**: Área, perímetro, circularidad, intensidad, aspect ratio
-- **Máscaras de visualización**: Overlay de segmentación con colores únicos
-- **Exportación de resultados**: Máscaras PNG y métricas JSON
+### 🛠️ Technology Stack
 
-### 📈 Análisis Estadístico
+**Frontend**
+- React 18 with Hooks
+- Material-UI (MUI) v5
+- Zustand (state management)
+- Konva.js (canvas manipulation)
+- Three.js (3D visualization)
+- Vite (build tool)
 
-- **T-tests**: Independent, paired, Welch, one-sample
-- **ANOVA**: One-way, two-way
-- **Correlaciones**: Pearson y Spearman
-- **Effect sizes**: Cohen's d, eta-squared
-- **Visualizaciones científicas**: Box plots, scatter plots, heatmaps
+**Backend**
+- Node.js 18
+- Express.js
+- Sequelize ORM
+- PostgreSQL 15
+- Sharp (image processing)
+- Multer (file upload)
 
-### ⏱️ Tracking Temporal
-
-- **Series temporales**: Análisis de time-lapse
-- **Tracking de células**: Nearest-neighbor algorithm
-- **Métricas temporales**: Velocidad, desplazamiento, persistencia
-- **Detección de eventos**: Divisiones celulares, muerte celular
-- **Timeline player**: Reproducción con controles interactivos
-
-### 📄 Generación de Reportes PDF
-
-- **Reportes científicos**: Formato profesional para publicaciones
-- **Secciones configurables**: Portada, resumen, metodología, resultados, estadísticas
-- **Inclusión automática**: Métricas, gráficos, tablas
-- **Exportación múltiple**: PDF, HTML, DOCX, LaTeX
-
-### 🖼️ Gestión de Imágenes
-
-- **Upload masivo**: Múltiples formatos (TIFF, PNG, JPEG)
-- **Metadatos CSV**: Asociación de imágenes con condiciones experimentales
-- **Thumbnails automáticos**: Para navegación rápida
-- **Visualización interactiva**: Zoom, pan, rotación
-- **Composiciones**: Superposición de múltiples imágenes con blend modes
-
----
-
-## 🛠️ Stack Tecnológico
-
-### Frontend
-- **React 18** - UI framework
-- **Material-UI (MUI)** - Componentes profesionales
-- **Zustand** - State management
-- **Konva.js** - Canvas interactivo
-- **Vite** - Build tool rápido
-- **Three.js** (opcional) - Visualización 3D
-- **jsPDF** - Generación de PDFs
-
-### Backend
-- **Node.js 18+** - Runtime
-- **Express.js** - Web framework
-- **PostgreSQL 15** - Base de datos
-- **Sequelize** - ORM
-- **Sharp** - Procesamiento de imágenes (GPU-accelerated)
-- **Multer** - File uploads
-
-### Infrastructure
-- **Docker & Docker Compose** - Containerización
-- **Nginx** - Reverse proxy
-- **PostgreSQL** - Base de datos persistente
-
----
-
-## 🚀 Instalación y Uso
-
-### Requisitos Previos
-
+**DevOps**
 - Docker & Docker Compose
-- Node.js 18+ (para desarrollo local)
-- PostgreSQL 15+ (o usar Docker)
+- GitHub Actions (CI/CD)
+- Nginx (reverse proxy)
 
-### Quick Start con Docker
+### 📋 Prerequisites
 
-```bash
-# Clonar el repositorio
-git clone <repository-url>
-cd biologic-project
+- Docker 20.10+
+- Docker Compose 2.0+
+- Node.js 18+ (for local development)
+- 4GB RAM minimum
+- 10GB free disk space
 
-# Iniciar todos los servicios
-docker compose up --build
+### 🚀 Quick Start
 
-# La aplicación estará disponible en:
-# Frontend: http://localhost:59424
-# Backend API: http://localhost:5000
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/biologic-project.git
+   cd biologic-project
+   ```
 
-### Desarrollo Local
+2. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings
+   ```
 
-#### Backend
+3. **Start with Docker Compose**
+   ```bash
+   docker compose up --build
+   ```
+
+4. **Access the application**
+   - Frontend: http://localhost
+   - Backend API: http://localhost:5000
+   - Health check: http://localhost:5000/health
+
+### 💻 Local Development
+
+**Backend**
 ```bash
 cd backend
 npm install
-npm run dev  # Servidor en http://localhost:5000
+npm run dev
 ```
 
-#### Frontend
+**Frontend**
 ```bash
 cd frontend
 npm install
-npm run dev  # Servidor en http://localhost:5173
+npm run dev
 ```
 
----
-
-## 📖 Funcionalidades Detalladas
-
-### 1. Sistema de Canales y Colores
-
-#### Para Imágenes Multicanal (RGB, 3+ canales)
-- Cada color se asigna a un canal específico (Ch 0, Ch 1, Ch 2, etc.)
-- Los canales se procesan independientemente
-- **Combinación normalizada**: Suma de canales dividida por número de imágenes activas
-- **Filtrado de negro**: Píxeles negros (valor 0) no contribuyen a la suma
-- **Ejemplo**: 2 imágenes activas → suma/2; 3 imágenes → suma/3
-- **Negro preservado**: Si todas las imágenes tienen negro en un píxel, resultado = 0
-- Resultado: Visualización tipo ImageJ/FIJI con normalización
-
-#### Para Imágenes Grayscale (1 canal)
-- Múltiples colores se combinan como overlays
-- **Combinación normalizada**: Suma de colores dividida por número de colores activos
-- **Filtrado de negro**: Píxeles negros (valor 0) no contribuyen a la suma
-- Todos los colores se aplican a la misma imagen base
-
-#### Paleta de Colores (12 colores)
-1. **DAPI** (Blue) - Marca ADN nuclear
-2. **FITC/GFP** (Green) - Green Fluorescent Protein
-3. **Texas Red/PE** (Red) - Phycoerythrin
-4. **CFP** (Cyan) - Cyan Fluorescent Protein
-5. **Cy5/Far-Red** (Magenta) - Cianina 5
-6. **YFP** (Yellow) - Yellow Fluorescent Protein
-7. **Orange** - RFP variants
-8. **APC** (Purple) - Allophycocyanin
-9. **PerCP** (Pink) - Peridinin-chlorophyll-protein
-10. **PE-Cy7** (Lime) - PE-Cyanine7 tandem
-11. **APC-Cy7** (Teal) - APC-Cyanine7 tandem
-12. **BV421** (Indigo) - Brilliant Violet 421
-
-### 2. Análisis Cuantitativo
-
-El sistema calcula automáticamente:
-
-- **Por Canal**:
-  - Intensidad media y desviación estándar
-  - Signal-to-Noise ratio
-  - Rango dinámico
-  - Coeficiente de variación
-  - Detección automática de fluoróforo
-
-- **Colocalización**:
-  - Coeficiente de Pearson entre canales
-  - Interpretación automática (Strong/Moderate/Weak)
-
-- **Calidad de Imagen**:
-  - Evaluación de foco (Excellent/Good/Moderate/Poor)
-  - Uniformidad de fondo
-  - Uniformidad de señal
-
-- **Métricas Celulares**:
-  - Conteo estimado de células
-  - Intensidad media global
-  - Signal-to-Noise por canal
-
-### 3. Segmentación ML
-
-#### Modelos Disponibles
-- **CellPose**: Segmentación universal sin entrenamiento
-- **StarDist**: Segmentación de núcleos con forma estelar
-- **U-Net**: Modelo pre-entrenado para células específicas
-- **Mask R-CNN**: Detección y segmentación de instancias
-
-#### Métricas por Célula
-- Área (píxeles)
-- Perímetro
-- Circularidad
-- Intensidad media
-- Aspect ratio
-- Solidity
-- Extent
-- Momentos de imagen (Hu moments)
-
-### 4. Análisis Estadístico
-
-#### Tests Disponibles
-- **T-tests**: Independent, paired, Welch, one-sample
-- **ANOVA**: One-way, two-way
-- **Correlaciones**: Pearson, Spearman
-- **Non-parametric**: Mann-Whitney, Kruskal-Wallis
-
-#### Visualizaciones
-- Box plots con significancia
-- Scatter plots con regresión
-- Heatmaps de correlación
-- Survival curves
-- Forest plots
-
-### 5. Tracking Temporal
-
-- **Detección de objetos**: Por frame usando connected components
-- **Tracking**: Nearest-neighbor algorithm
-- **Métricas**:
-  - Velocidad instantánea y promedio
-  - Distancia total recorrida
-  - Persistencia temporal
-  - Detección de divisiones
-  - Detección de muerte celular
-
-### 6. Visualización 3D (Básica)
-
-- Renderizado volumétrico básico
-- Controles de opacidad
-- Modos de visualización (Volume, MIP, Surface)
-- Timeline player para series temporales
-
-**Nota**: Requiere instalación de Three.js:
+**Database**
 ```bash
-cd frontend
-npm install three @react-three/fiber @react-three/drei
+docker compose up postgres -d
 ```
 
-### 7. Generación de Reportes
-
-- **Secciones**:
-  - Portada con logo
-  - Resumen ejecutivo
-  - Metodología
-  - Resultados con imágenes
-  - Análisis estadístico
-  - Apéndices
-
-- **Formatos**: PDF, HTML, DOCX, LaTeX
-
----
-
-## 📡 API Documentation
-
-### Endpoints Principales
-
-#### Upload
-```
-POST /api/upload/images      - Subir imágenes (múltiples)
-POST /api/csv-uploads        - Subir CSV con metadatos (CRUD completo)
-```
-
-#### Imágenes
-```
-GET  /api/images                    - Listar todas las imágenes
-GET  /api/images/:id                - Obtener imagen
-GET  /api/images/:id/thumbnail      - Obtener thumbnail
-GET  /api/images/:id/details        - Detalles completos
-GET  /api/images/:id/slices         - Slice multi-dimensional
-POST /api/images/:id/color-adjust   - Ajustar colores/canales
-GET  /api/images/:id/quantitative-analysis  - Análisis cuantitativo
-POST /api/images/:id/segment        - Segmentación ML
-POST /api/images/:id/export/ome-tiff - Exportar a OME-TIFF
-POST /api/images/:id/export/hdf5     - Exportar a HDF5
-PUT  /api/images/:id                - Actualizar imagen
-DELETE /api/images/:id               - Borrar imagen
-```
-
-#### ML Segmentation
-```
-GET  /api/ml/models                  - Modelos disponibles
-POST /api/ml/segment/:id            - Realizar segmentación
-GET  /api/ml/segment/:id/metrics    - Métricas de segmentación
-```
-
-#### Procesamiento de Imágenes
-```
-POST /api/image/process              - Procesar con contraste/brillo
-GET  /api/image/:id/histogram        - Histograma de píxeles
-```
-
-#### CSVs
-```
-GET    /api/csv-uploads               - Listar CSVs
-GET    /api/csv-uploads/:id          - Obtener CSV
-POST   /api/csv-uploads               - Crear CSV
-PUT    /api/csv-uploads/:id          - Actualizar CSV
-DELETE /api/csv-uploads/:id          - Borrar CSV
-```
-
-#### Composiciones
-```
-GET    /api/compositions              - Listar composiciones
-GET    /api/compositions/:id         - Obtener composición
-POST   /api/compositions              - Crear composición
-PUT    /api/compositions/:id         - Actualizar composición
-DELETE /api/compositions/:id         - Borrar composición
-```
-
-#### Metadatos
-```
-GET /api/metadata                    - Todos los metadatos
-GET /api/metadata/:imageId           - Metadatos de imagen
-```
-
-### Ejemplo de Uso: Ajustar Colores
-
-```javascript
-// Frontend
-import { adjustImageColor } from './services/api';
-
-const adjustments = [
-  {
-    colorId: 2,        // Green
-    channel: 0,         // Canal 0
-    contrast: 100,      // 100%
-    enabled: true
-  },
-  {
-    colorId: 3,        // Red
-    channel: 1,         // Canal 1
-    contrast: 120,      // 120%
-    enabled: true
-  }
-];
-
-const blob = await adjustImageColor(imageId, adjustments);
-const imageUrl = URL.createObjectURL(blob);
-```
-
----
-
-## 📁 Estructura del Proyecto
+### 🏗️ Project Structure
 
 ```
 biologic-project/
+├── .github/
+│   └── workflows/          # CI/CD pipelines
 ├── backend/
 │   ├── src/
-│   │   ├── config/              # Configuración (DB, etc.)
-│   │   ├── controllers/         # Controladores de rutas
-│   │   │   ├── image.controller.js
-│   │   │   ├── imageProcess.controller.js
-│   │   │   ├── mlSegmentation.controller.js
-│   │   │   ├── upload.controller.js
-│   │   │   └── ...
-│   │   ├── services/            # Lógica de negocio
-│   │   │   ├── colorMapping.service.js      # Procesamiento multicanal
-│   │   │   ├── mlSegmentation.service.js   # Segmentación ML
-│   │   │   ├── statisticalAnalysis.service.js  # Análisis estadístico
-│   │   │   ├── temporalAnalysis.service.js     # Tracking temporal
-│   │   │   ├── imageProcessor.service.js
-│   │   │   └── ...
-│   │   ├── models/              # Modelos Sequelize
-│   │   ├── routes/              # Definición de rutas
-│   │   ├── middleware/          # Middleware Express
-│   │   └── server.js            # Entry point
-│   ├── uploads/                 # Archivos subidos
-│   └── package.json
-│
+│   │   ├── controllers/    # Request handlers
+│   │   ├── models/         # Database models
+│   │   ├── routes/         # API routes
+│   │   ├── services/       # Business logic
+│   │   └── middleware/     # Express middleware
+│   └── uploads/            # File storage
 ├── frontend/
 │   ├── src/
-│   │   ├── components/          # Componentes React
-│   │   │   ├── ColorControlPanel/    # Control de colores
-│   │   │   ├── SegmentationPanel/    # Segmentación ML
-│   │   │   ├── AnalyticsDashboard/   # Dashboard analítico
-│   │   │   ├── StatisticalAnalysis/   # Análisis estadístico
-│   │   │   ├── TemporalTracking/     # Tracking temporal
-│   │   │   ├── VolumetricViewer3D/   # Visualización 3D
-│   │   │   ├── ReportGenerator/      # Generación de reportes
-│   │   │   └── ...
-│   │   ├── hooks/               # Custom hooks
-│   │   │   ├── useColorAdjustment.js
-│   │   │   ├── useImageLoader.js
-│   │   │   └── ...
-│   │   ├── store/               # Zustand stores
-│   │   │   ├── colorStore.js
-│   │   │   ├── imageStore.js
-│   │   │   └── ...
-│   │   ├── services/            # API client
-│   │   │   └── api.js
-│   │   └── App.jsx              # Componente principal
-│   └── package.json
-│
-├── docker-compose.yml           # Orquestación Docker
-├── Dockerfile.backend           # Dockerfile backend
-├── Dockerfile.frontend          # Dockerfile frontend
-├── nginx.conf                   # Configuración Nginx
-└── README.md                    # Este archivo
+│   │   ├── components/     # React components
+│   │   ├── hooks/          # Custom hooks
+│   │   ├── services/       # API clients
+│   │   ├── store/          # State management
+│   │   └── theme/          # MUI theme
+│   └── index.html
+├── docker-compose.yml      # Service orchestration
+├── Dockerfile.backend      # Backend container
+├── Dockerfile.frontend     # Frontend container
+└── README.md
 ```
 
----
+### 📚 API Documentation
 
-## ⚙️ Configuración
-
-### Variables de Entorno (Backend)
-
-Crea `backend/.env`:
-
-```env
-PORT=5000
-NODE_ENV=development
-
-# Database
-DB_HOST=postgres
-DB_PORT=5432
-DB_NAME=biologic_db
-DB_USER=postgres
-DB_PASSWORD=postgres
-
-# File Upload
-MAX_FILE_SIZE=104857600  # 100MB
-```
-
-### Variables de Entorno (Frontend)
-
-Crea `frontend/.env`:
-
-```env
-VITE_API_URL=http://localhost:5000
-```
-
----
-
-## 🧪 Testing
-
-### Backend
+**Image Upload**
 ```bash
+POST /api/upload
+Content-Type: multipart/form-data
+Body: { images: [File, File, ...] }
+```
+
+**Get All Images**
+```bash
+GET /api/images
+Response: { data: [...], count: number }
+```
+
+**Image Processing**
+```bash
+POST /api/image/process
+Body: { imageId: string, operations: [...] }
+```
+
+**Analytics**
+```bash
+GET /api/images/:id/quantitative
+Response: { metrics: {...}, channels: [...] }
+```
+
+See [API.md](./API.md) for complete documentation.
+
+### 🔄 CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and deployment:
+
+- **On Pull Request**: Run tests and linting
+- **On Push to Main**: Build, test, and deploy
+- **On Tag**: Create release and publish Docker images
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for deployment instructions.
+
+### 🧪 Testing
+
+```bash
+# Backend tests
 cd backend
 npm test
-```
 
-### Frontend
-```bash
+# Frontend tests
 cd frontend
 npm test
+
+# E2E tests
+npm run test:e2e
 ```
+
+### 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### 👥 Authors
+
+- Your Name - [GitHub](https://github.com/yourusername)
+
+### 🙏 Acknowledgments
+
+- Built with React and Material-UI
+- Powered by PostgreSQL
+- Containerized with Docker
 
 ---
 
-## 🚢 Deployment
+## Español
 
-### Docker Compose (Recomendado)
+### Descripción General
+
+Una plataforma web de nivel empresarial para el análisis de imágenes biológicas y de microscopía. Este sistema proporciona herramientas avanzadas para visualización multicanal, análisis cuantitativo, segmentación basada en ML y generación de informes completos de imágenes de microscopía TIFF.
+
+### ✨ Características Principales
+
+- **🖼️ Soporte Multi-Formato**
+  - Procesamiento de formato TIFF (incluyendo stacks multidimensionales)
+  - Visualización multicanal con mapeo de colores personalizable
+  - Navegación de Z-stack y renderizado volumétrico 3D
+
+- **📊 Análisis Avanzado**
+  - Métricas cuantitativas en tiempo real (intensidad, área, SNR)
+  - Análisis de colocalización de canales
+  - Análisis estadístico con gráficos de distribución
+  - Seguimiento temporal para datos de series temporales
+
+- **🤖 Integración con Machine Learning**
+  - Segmentación automática de células/estructuras
+  - Modelos ML personalizables
+  - Capacidad de procesamiento por lotes
+
+- **🎨 Visualización Profesional**
+  - Canvas interactivo con controles de zoom/pan
+  - Composición de imágenes multicapa con modos de fusión
+  - Ajuste de canales de color y mejora de contraste
+  - Diseño responsive (móvil, tablet, escritorio)
+
+- **📑 Reportes y Exportación**
+  - Generación de informes PDF con resultados de análisis
+  - Exportación de datos en múltiples formatos
+  - Extracción y visualización de metadatos
+
+### 🛠️ Stack Tecnológico
+
+**Frontend**
+- React 18 con Hooks
+- Material-UI (MUI) v5
+- Zustand (gestión de estado)
+- Konva.js (manipulación de canvas)
+- Three.js (visualización 3D)
+- Vite (herramienta de compilación)
+
+**Backend**
+- Node.js 18
+- Express.js
+- Sequelize ORM
+- PostgreSQL 15
+- Sharp (procesamiento de imágenes)
+- Multer (carga de archivos)
+
+**DevOps**
+- Docker & Docker Compose
+- GitHub Actions (CI/CD)
+- Nginx (proxy inverso)
+
+### 📋 Requisitos Previos
+
+- Docker 20.10+
+- Docker Compose 2.0+
+- Node.js 18+ (para desarrollo local)
+- 4GB RAM mínimo
+- 10GB de espacio libre en disco
+
+### 🚀 Inicio Rápido
+
+1. **Clonar el repositorio**
+   ```bash
+   git clone https://github.com/yourusername/biologic-project.git
+   cd biologic-project
+   ```
+
+2. **Configurar variables de entorno**
+   ```bash
+   cp .env.example .env
+   # Editar .env con tus configuraciones
+   ```
+
+3. **Iniciar con Docker Compose**
+   ```bash
+   docker compose up --build
+   ```
+
+4. **Acceder a la aplicación**
+   - Frontend: http://localhost
+   - API Backend: http://localhost:5000
+   - Health check: http://localhost:5000/health
+
+### 💻 Desarrollo Local
+
+**Backend**
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+**Frontend**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+**Base de Datos**
+```bash
+docker compose up postgres -d
+```
+
+### 🏗️ Estructura del Proyecto
+
+```
+biologic-project/
+├── .github/
+│   └── workflows/          # Pipelines CI/CD
+├── backend/
+│   ├── src/
+│   │   ├── controllers/    # Manejadores de peticiones
+│   │   ├── models/         # Modelos de base de datos
+│   │   ├── routes/         # Rutas API
+│   │   ├── services/       # Lógica de negocio
+│   │   └── middleware/     # Middleware de Express
+│   └── uploads/            # Almacenamiento de archivos
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # Componentes React
+│   │   ├── hooks/          # Hooks personalizados
+│   │   ├── services/       # Clientes API
+│   │   ├── store/          # Gestión de estado
+│   │   └── theme/          # Tema MUI
+│   └── index.html
+├── docker-compose.yml      # Orquestación de servicios
+├── Dockerfile.backend      # Contenedor backend
+├── Dockerfile.frontend     # Contenedor frontend
+└── README.md
+```
+
+### 📚 Documentación de la API
+
+**Subir Imagen**
+```bash
+POST /api/upload
+Content-Type: multipart/form-data
+Body: { images: [File, File, ...] }
+```
+
+**Obtener Todas las Imágenes**
+```bash
+GET /api/images
+Response: { data: [...], count: number }
+```
+
+**Procesar Imagen**
+```bash
+POST /api/image/process
+Body: { imageId: string, operations: [...] }
+```
+
+**Analíticas**
+```bash
+GET /api/images/:id/quantitative
+Response: { metrics: {...}, channels: [...] }
+```
+
+Ver [API.md](./API.md) para documentación completa.
+
+### 🔄 Pipeline CI/CD
+
+Este proyecto utiliza GitHub Actions para integración y despliegue continuo:
+
+- **En Pull Request**: Ejecutar pruebas y linting
+- **En Push a Main**: Construir, probar y desplegar
+- **En Tag**: Crear release y publicar imágenes Docker
+
+Ver [DEPLOYMENT.md](./DEPLOYMENT.md) para instrucciones de despliegue.
+
+### 🧪 Pruebas
 
 ```bash
-docker compose up --build -d
+# Pruebas backend
+cd backend
+npm test
+
+# Pruebas frontend
+cd frontend
+npm test
+
+# Pruebas E2E
+npm run test:e2e
 ```
 
-### Producción con Docker
+### 🤝 Contribuir
 
-1. Configurar variables de entorno
-2. Ajustar `docker-compose.yml` para producción
-3. Configurar SSL/HTTPS en Nginx
-4. Configurar backups de PostgreSQL
+1. Hacer fork del repositorio
+2. Crear tu rama de característica (`git checkout -b feature/CaracteristicaIncreible`)
+3. Commit de tus cambios (`git commit -m 'Agregar alguna CaracteristicaIncreible'`)
+4. Push a la rama (`git push origin feature/CaracteristicaIncreible`)
+5. Abrir un Pull Request
 
-### CI/CD
+### 📝 Licencia
 
-El proyecto está preparado para:
-- GitHub Actions
-- GitLab CI
-- Jenkins
-- Cualquier sistema CI/CD moderno
+Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
----
+### 👥 Autores
 
-## 📝 Formato de CSV
+- Tu Nombre - [GitHub](https://github.com/yourusername)
 
-El CSV debe contener al menos la columna `image_path`:
+### 🙏 Agradecimientos
 
-```csv
-image_path,x,y,z,well_id,condition,timestamp,channel_1,channel_2,channel_3
-images/cell_001.tif,100,200,50,A1,control,2024-01-01,true,false,true
-images/cell_002.tif,150,250,60,A2,treatment,2024-01-01,true,true,false
-```
-
-**Columnas requeridas**:
-- `image_path` (obligatoria): Ruta o nombre del archivo
-
-**Columnas opcionales**:
-- `x`, `y`, `z`: Coordenadas espaciales
-- `well_id`: Identificador de pocillo (A1, B2, etc.)
-- `condition`: Condición experimental
-- `timestamp`: Fecha/hora
-- `channel_1`, `channel_2`, `channel_3`: Canales activos (true/false)
+- Construido con React y Material-UI
+- Impulsado por PostgreSQL
+- Contenerizado con Docker
 
 ---
 
-## 🎯 Casos de Uso
+## 📸 Screenshots
 
-### 1. Análisis de Inmunofluorescencia
-- Cargar imágenes multicanal (DAPI, GFP, RFP)
-- Asignar colores a cada canal
-- Analizar colocalización
-- Generar reporte PDF
+### Dashboard
+![Dashboard](docs/images/dashboard.png)
 
-### 2. Segmentación Celular
-- Seleccionar modelo ML (CellPose)
-- Segmentar células
-- Exportar métricas por célula
-- Visualizar máscaras de segmentación
+### Image Viewer
+![Image Viewer](docs/images/viewer.png)
 
-### 3. Análisis Temporal
-- Cargar serie temporal
-- Realizar tracking de células
-- Analizar velocidad y desplazamiento
-- Detectar eventos (división, muerte)
-
-### 4. Análisis Estadístico
-- Seleccionar grupos experimentales
-- Realizar t-test o ANOVA
-- Visualizar resultados
-- Exportar en formato APA
+### Analytics
+![Analytics](docs/images/analytics.png)
 
 ---
 
-## 🔧 Troubleshooting
+## 🔗 Links
 
-### Error: "Image has 1 channels" - Los canales no funcionan
-**Solución**: Tu imagen es grayscale. Los canales solo funcionan con imágenes RGB o multicanal. Para grayscale, los colores se combinan como overlays.
-
-### Error: "Cannot find module '@react-three/fiber'"
-```bash
-cd frontend && npm install three @react-three/fiber @react-three/drei
-```
-
-### Error: "Cannot find module 'jspdf'"
-```bash
-cd frontend && npm install jspdf html2canvas
-```
-
-### La imagen no se actualiza al cambiar colores
-- Verifica los logs del backend
-- Asegúrate de que la imagen tenga múltiples canales para usar el sistema de canales
-- Para imágenes grayscale, activa múltiples colores sin cambiar canales
+- [Documentation](https://docs.example.com)
+- [API Reference](https://api.example.com/docs)
+- [Issue Tracker](https://github.com/yourusername/biologic-project/issues)
+- [Changelog](CHANGELOG.md)
 
 ---
 
-## 📚 Referencias
+## 📧 Contact
 
-- [Bio-image Analysis Notebooks](https://biapol.github.io/blog/robert_haase/BioImageAnalysisNotebooks/)
-- [Ultivue Spatial Analysis](https://ultivue.com/image-analysis/)
-- [Napari Documentation](https://napari.org/stable/)
-- [ImageJ/FIJI](https://imagej.net/software/fiji/)
-
----
-
-## 📄 Licencia
-
-MIT License
+For questions or support, please contact:
+- Email: support@example.com
+- Discord: [Join our server](https://discord.gg/example)
 
 ---
 
-## 👥 Contribución
-
-1. Fork el proyecto
-2. Crea una rama (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
----
-
-## 🆘 Soporte
-
-Para problemas o preguntas:
-- Abre un issue en GitHub
-- Revisa los logs del backend/frontend
-- Consulta la documentación de API
-
----
-
-**Versión**: 1.0.0  
-**Última actualización**: Noviembre 2025
+**Made with ❤️ for the scientific community**

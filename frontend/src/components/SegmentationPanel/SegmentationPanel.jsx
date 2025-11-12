@@ -12,7 +12,8 @@ import {
   Alert,
   CircularProgress,
   Chip,
-  Divider
+  Divider,
+  Snackbar
 } from '@mui/material';
 import {
   Science,
@@ -28,6 +29,7 @@ export const SegmentationPanel = () => {
   const { currentImageId } = useImageStore();
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModel] = useState('cellpose');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
   const [loading, setLoading] = useState(false);
   const [segmentationMask, setSegmentationMask] = useState(null);
   const [metrics, setMetrics] = useState(null);
@@ -55,7 +57,11 @@ export const SegmentationPanel = () => {
 
   const handleSegment = async () => {
     if (!currentImageId) {
-      alert('Please select an image first');
+      setSnackbar({
+        open: true,
+        message: 'Please select an image first',
+        severity: 'warning'
+      });
       return;
     }
 
@@ -71,9 +77,19 @@ export const SegmentationPanel = () => {
       if (metricsResponse.status === 'success') {
         setMetrics(metricsResponse);
       }
+      
+      setSnackbar({
+        open: true,
+        message: 'Segmentation completed successfully!',
+        severity: 'success'
+      });
     } catch (error) {
       console.error('Error segmenting cells:', error);
-      alert('Error performing segmentation. Please try again.');
+      setSnackbar({
+        open: true,
+        message: 'Error performing segmentation. Please try again.',
+        severity: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -260,6 +276,22 @@ export const SegmentationPanel = () => {
           )}
         </Box>
       )}
+      
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 };

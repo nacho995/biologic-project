@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-import CsvUpload from './CsvUpload.js';
 
 const Image = sequelize.define(
   'Image',
@@ -9,15 +8,6 @@ const Image = sequelize.define(
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-    },
-    csvUploadId: {
-      type: DataTypes.UUID,
-      allowNull: true,
-      references: {
-        model: 'csv_uploads',
-        key: 'id',
-      },
-      field: 'csv_upload_id',
     },
     imagePath: {
       type: DataTypes.STRING,
@@ -56,17 +46,6 @@ const Image = sequelize.define(
     underscored: true,
   }
 );
-
-// Definir relaciones
-Image.belongsTo(CsvUpload, {
-  foreignKey: 'csvUploadId',
-  as: 'csvUpload',
-});
-
-CsvUpload.hasMany(Image, {
-  foreignKey: 'csvUploadId',
-  as: 'images',
-});
 
 export default Image;
 
