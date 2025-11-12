@@ -27,11 +27,15 @@ import {
 } from '@mui/icons-material';
 import { useImageStore } from '../../store/imageStore.js';
 import { useColorStore } from '../../store/colorStore.js';
+import { useZoom } from '../../hooks/useZoom.js';
+import { usePan } from '../../hooks/usePan.js';
 import { getSlice } from '../../services/api.js';
 
 export const VolumetricViewer3D = () => {
   const { currentImageId, images } = useImageStore();
   const { colors } = useColorStore();
+  const { zoom, setZoom, handleWheel, zoomIn, zoomOut, resetZoom } = useZoom();
+  const { panX, panY, isDragging, startDrag, onDrag, endDrag, resetPan } = usePan();
   
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
@@ -44,7 +48,6 @@ export const VolumetricViewer3D = () => {
   const [error, setError] = useState(null);
   
   const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
-  const [zoom, setZoom] = useState(1);
   const [opacity, setOpacity] = useState(0.8);
   const [brightness, setBrightness] = useState(1);
   const [contrast, setContrast] = useState(1);
@@ -52,7 +55,7 @@ export const VolumetricViewer3D = () => {
   const [sliceImages, setSliceImages] = useState([]);
   const [imageInfo, setImageInfo] = useState(null);
   
-  const isDragging = useRef(false);
+  const isRotating = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
 
   // Get current image info
@@ -189,7 +192,7 @@ export const VolumetricViewer3D = () => {
     } else {
       renderVolume(ctx, canvas);
     }
-  }, [sliceImages, sliceIndex, viewMode, zoom, rotation, brightness, contrast, opacity, colors]);
+  }, [sliceImages, sliceIndex, viewMode, zoom, panX, panY, rotation, brightness, contrast, opacity, colors]);
 
   // Render single slice
   const renderSlice = (ctx, canvas) => {
@@ -211,12 +214,12 @@ export const VolumetricViewer3D = () => {
     const adjustedData = applyColorAdjustments(tempCtx, imageData);
     tempCtx.putImageData(adjustedData, 0, 0);
     
-    // Draw adjusted image to main canvas with zoom
+    // Draw adjusted image to main canvas with zoom and pan
     const scale = zoom;
     const w = tempCanvas.width * scale;
     const h = tempCanvas.height * scale;
-    const x = (canvas.width - w) / 2;
-    const y = (canvas.height - h) / 2;
+    const x = (canvas.width - w) / 2 + panX;
+    const y = (canvas.height - h) / 2 + panY;
     
     ctx.save();
     ctx.globalAlpha = opacity;
@@ -257,12 +260,12 @@ export const VolumetricViewer3D = () => {
     const adjustedData = applyColorAdjustments(tempCtx, mipData);
     tempCtx.putImageData(adjustedData, 0, 0);
     
-    // Draw to main canvas with zoom
+    // Draw to main canvas with zoom and pan
     const scale = zoom;
     const w = tempCanvas.width * scale;
     const h = tempCanvas.height * scale;
-    const x = (canvas.width - w) / 2;
-    const y = (canvas.height - h) / 2;
+    const x = (canvas.width - w) / 2 + panX;
+    const y = (canvas.height - h) / 2 + panY;
     
     ctx.save();
     ctx.globalAlpha = opacity;
@@ -295,12 +298,12 @@ export const VolumetricViewer3D = () => {
     const adjustedData = applyColorAdjustments(tempCtx, imageData);
     tempCtx.putImageData(adjustedData, 0, 0);
     
-    // Draw to main canvas with zoom
+    // Draw to main canvas with zoom and pan
     const scale = zoom;
     const w = tempCanvas.width * scale;
     const h = tempCanvas.height * scale;
-    const x = (canvas.width - w) / 2;
-    const y = (canvas.height - h) / 2;
+    const x = (canvas.width - w) / 2 + panX;
+    const y = (canvas.height - h) / 2 + panY;
     
     ctx.save();
     ctx.globalAlpha = 1;
@@ -318,16 +321,29 @@ export const VolumetricViewer3D = () => {
     }
   }, [isPlaying, maxSlices, viewMode]);
 
-  // Mouse interaction for rotation (in volume mode)
+  // Mouse interaction for pan and rotation
   const handleMouseDown = (e) => {
-    if (viewMode === 'volume' || viewMode === 'mip') {
-      isDragging.current = true;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    if (e.shiftKey) {
+      // Shift + drag = rotation (for volume/MIP modes)
+      isRotating.current = true;
       lastMousePos.current = { x: e.clientX, y: e.clientY };
+    } else {
+      // Normal drag = pan
+      startDrag(x, y);
     }
   };
 
   const handleMouseMove = (e) => {
-    if (isDragging.current) {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    if (isRotating.current) {
+      // Handle rotation with Shift key
       const deltaX = e.clientX - lastMousePos.current.x;
       const deltaY = e.clientY - lastMousePos.current.y;
       
@@ -338,16 +354,26 @@ export const VolumetricViewer3D = () => {
       }));
       
       lastMousePos.current = { x: e.clientX, y: e.clientY };
+    } else {
+      // Handle panning
+      onDrag(x, y);
     }
   };
 
   const handleMouseUp = () => {
-    isDragging.current = false;
+    isRotating.current = false;
+    endDrag();
+  };
+  
+  const handleCanvasWheel = (e) => {
+    e.preventDefault();
+    handleWheel(e);
   };
 
   const resetView = () => {
     setRotation({ x: 0, y: 0, z: 0 });
-    setZoom(1);
+    resetZoom();
+    resetPan();
     setBrightness(1);
     setContrast(1);
     setOpacity(0.8);
@@ -593,10 +619,16 @@ export const VolumetricViewer3D = () => {
           ref={canvasRef}
           width={800}
           height={600}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onWheel={handleCanvasWheel}
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'contain',
+            cursor: isDragging ? 'grabbing' : 'grab',
           }}
         />
 
