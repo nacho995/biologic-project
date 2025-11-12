@@ -67,16 +67,16 @@ export const ZoomControls = () => {
           alignItems: 'baseline',
           gap: 0.5,
         }}>
-          <Typography
+        <Typography
             variant="h4"
-            sx={{
+          sx={{
               color: '#4299E1',
-              fontWeight: 700,
+            fontWeight: 700,
               fontSize: { xs: '1.5rem', sm: '1.75rem' },
               fontFamily: 'monospace',
               textShadow: '0 0 8px rgba(66, 153, 225, 0.5)',
-            }}
-          >
+          }}
+        >
             {(zoom * 100).toFixed(0)}
           </Typography>
           <Typography
@@ -88,7 +88,7 @@ export const ZoomControls = () => {
             }}
           >
             %
-          </Typography>
+        </Typography>
         </Box>
       </Box>
       <Box
@@ -191,39 +191,39 @@ export const ZoomControls = () => {
         borderRadius: 0.5,
         boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.3)',
       }}>
-        <Slider
-          value={zoom}
-          min={0.1}
-          max={10}
-          step={0.1}
-          onChange={(_, value) => setZoom(value)}
-          valueLabelDisplay="auto"
-          valueLabelFormat={(value) => `${(value * 100).toFixed(0)}%`}
-          sx={{
+      <Slider
+        value={zoom}
+        min={0.1}
+        max={10}
+        step={0.1}
+        onChange={(_, value) => setZoom(value)}
+        valueLabelDisplay="auto"
+        valueLabelFormat={(value) => `${(value * 100).toFixed(0)}%`}
+        sx={{
             color: '#4299E1',
-            '& .MuiSlider-thumb': {
+          '& .MuiSlider-thumb': {
               width: { xs: 16, sm: 18 },
               height: { xs: 16, sm: 18 },
               backgroundColor: '#4299E1',
               border: '2px solid #2D3748',
               boxShadow: '0 0 0 2px #0F1419, 0 0 12px rgba(66, 153, 225, 0.5)',
               transition: 'all 0.15s ease',
-              '&:hover': {
+            '&:hover': {
                 boxShadow: '0 0 0 2px #0F1419, 0 0 16px rgba(66, 153, 225, 0.8)',
                 transform: 'scale(1.15)',
-              },
             },
-            '& .MuiSlider-track': {
+          },
+          '& .MuiSlider-track': {
               backgroundColor: '#4299E1',
               height: { xs: 3, sm: 4 },
               border: 'none',
               boxShadow: '0 0 8px rgba(66, 153, 225, 0.4)',
-            },
-            '& .MuiSlider-rail': {
+          },
+          '& .MuiSlider-rail': {
               backgroundColor: '#2D3748',
               height: { xs: 3, sm: 4 },
-            },
-            '& .MuiSlider-valueLabel': {
+          },
+          '& .MuiSlider-valueLabel': {
               backgroundColor: '#0F1419',
               border: '1px solid #4299E1',
               fontFamily: 'monospace',
@@ -237,14 +237,14 @@ export const ZoomControls = () => {
             },
             '& .MuiSlider-markActive': {
               backgroundColor: '#4299E1',
-            },
-          }}
+          },
+        }}
           marks={[
             { value: 1, label: '' },
             { value: 2, label: '' },
             { value: 5, label: '' },
           ]}
-        />
+      />
       </Box>
     </Box>
   );

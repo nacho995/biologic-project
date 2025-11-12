@@ -70,17 +70,17 @@ export const ColorControlPanel = () => {
           border: '1px solid #2D3748',
           borderRadius: 0.5,
         }}>
-          <Typography
-            variant="caption"
-            sx={{
+        <Typography
+          variant="caption"
+          sx={{
               color: '#48BB78',
               fontFamily: 'monospace',
               fontWeight: 700,
               fontSize: '0.75rem',
-            }}
-          >
+          }}
+        >
             [{adjustments.filter(a => a.enabled).length}/3]
-          </Typography>
+        </Typography>
         </Box>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1.5, sm: 2 } }}>
@@ -121,7 +121,7 @@ export const ColorControlPanel = () => {
                       fontSize: { xs: '0.8125rem', sm: '0.875rem' },
                       fontWeight: 700,
                       letterSpacing: '0.05em',
-                    }}
+                  }}
                   >
                     {color.name}
                   </Typography>

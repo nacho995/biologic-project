@@ -4,7 +4,7 @@ import { ColorMappingService } from '../services/colorMapping.service.js';
 import models from '../models/index.js';
 import sharp from 'sharp';
 
-const { Image, CsvUpload } = models;
+const { Image } = models;
 const fileStorage = new FileStorageService();
 const imageProcessor = new ImageProcessorService();
 const colorMapper = new ColorMappingService();
@@ -14,30 +14,16 @@ export const getAllImages = async (req, res, next) => {
     const {
       page = 1,
       limit = 20,
-      csvUploadId,
       sortBy = 'uploadDate',
       order = 'DESC',
     } = req.query;
 
     const offset = (parseInt(page) - 1) * parseInt(limit);
-    const where = {};
-
-    if (csvUploadId) {
-      where.csvUploadId = csvUploadId;
-    }
 
     const { count, rows } = await Image.findAndCountAll({
-      where,
       limit: parseInt(limit),
       offset,
       order: [[sortBy, order]],
-      include: [
-        {
-          model: CsvUpload,
-          as: 'csvUpload',
-          attributes: ['id', 'filename'],
-        },
-      ],
     });
 
     res.json({
@@ -56,14 +42,7 @@ export const getImageById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const image = await Image.findByPk(id, {
-      include: [
-        {
-          model: CsvUpload,
-          as: 'csvUpload',
-        },
-      ],
-    });
+    const image = await Image.findByPk(id);
 
     if (!image) {
       return res.status(404).json({ error: 'Image not found' });
@@ -75,28 +54,10 @@ export const getImageById = async (req, res, next) => {
   }
 };
 
-export const getImagesByCsv = async (req, res, next) => {
-  try {
-    const { csvId } = req.params;
-
-    const images = await Image.findAll({
-      where: { csvUploadId: csvId },
-      order: [['uploadDate', 'DESC']],
-    });
-
-    res.json({
-      count: images.length,
-      images,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const updateImage = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { metadata, csvUploadId } = req.body;
+    const { metadata } = req.body;
 
     const image = await Image.findByPk(id);
 
@@ -105,7 +66,6 @@ export const updateImage = async (req, res, next) => {
     }
 
     if (metadata) image.metadata = { ...image.metadata, ...metadata };
-    if (csvUploadId !== undefined) image.csvUploadId = csvUploadId;
 
     await image.save();
 

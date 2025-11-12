@@ -2,7 +2,6 @@ import { Router } from 'express';
 import {
   getAllImages,
   getImageById,
-  getImagesByCsv,
   updateImage,
   deleteImage,
   getImage,
@@ -19,7 +18,6 @@ const router = Router();
 
 // Nuevos endpoints CRUD
 router.get('/', getAllImages);
-router.get('/by-csv/:csvId', getImagesByCsv);
 router.get('/:id/details', getImageById);
 router.put('/:id', updateImage);
 router.delete('/:id', deleteImage);

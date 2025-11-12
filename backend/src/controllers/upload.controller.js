@@ -20,7 +20,6 @@ export const uploadImages = async (req, res, next) => {
     }
 
     console.log(`Processing ${req.files.length} image files...`);
-    const { csvUploadId } = req.body;
     const processedImages = [];
 
     for (const file of req.files) {
@@ -37,7 +36,6 @@ export const uploadImages = async (req, res, next) => {
         console.log(`Thumbnail generated: ${thumbnailPath}`);
 
         const image = await Image.create({
-          csvUploadId: csvUploadId || null,
           imagePath: filePath,
           thumbnailPath,
           originalFilename: file.originalname,

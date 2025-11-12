@@ -200,47 +200,47 @@ export const MultiDimensionalViewer = () => {
         }}
       >
         <Grid container spacing={2} alignItems="center">
-          {/* Plane Selection */}
+            {/* Plane Selection */}
           <Grid item xs={12} sm={4}>
-            <ToggleButtonGroup
-              value={currentPlane}
-              exclusive
-              onChange={handlePlaneChange}
+              <ToggleButtonGroup
+                value={currentPlane}
+                exclusive
+                onChange={handlePlaneChange}
               size="small"
-              fullWidth
+                fullWidth
             >
               <ToggleButton value="x">X</ToggleButton>
               <ToggleButton value="y">Y</ToggleButton>
               <ToggleButton value="z">Z</ToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
+              </ToggleButtonGroup>
+            </Grid>
 
-          {/* Playback Controls */}
+      {/* Playback Controls */}
           <Grid item xs={12} sm={8}>
             <Stack direction="row" spacing={1} alignItems="center">
               <IconButton size="small" onClick={handlePrevSlice} disabled={sliceIndex === 0}>
-                <SkipPrevious />
-              </IconButton>
+              <SkipPrevious />
+            </IconButton>
               <IconButton size="small" onClick={togglePlay} color="primary">
-                {playing ? <Pause /> : <PlayArrow />}
-              </IconButton>
+              {playing ? <Pause /> : <PlayArrow />}
+            </IconButton>
               <IconButton size="small" onClick={handleNextSlice} disabled={sliceIndex >= maxSlices - 1}>
-                <SkipNext />
-              </IconButton>
-              <Box sx={{ flexGrow: 1, px: 2 }}>
-                <Slider
-                  value={sliceIndex}
-                  min={0}
-                  max={maxSlices - 1}
-                  step={1}
-                  onChange={handleSliceChange}
+              <SkipNext />
+            </IconButton>
+            <Box sx={{ flexGrow: 1, px: 2 }}>
+              <Slider
+                value={sliceIndex}
+                min={0}
+                max={maxSlices - 1}
+                step={1}
+                onChange={handleSliceChange}
                   size="small"
-                />
-              </Box>
+              />
+            </Box>
               <Typography variant="caption" sx={{ minWidth: 60, textAlign: 'right' }}>
                 {sliceIndex + 1}/{maxSlices}
-              </Typography>
-            </Stack>
+            </Typography>
+          </Stack>
           </Grid>
         </Grid>
       </Box>

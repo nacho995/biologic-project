@@ -124,14 +124,14 @@ export const AnalyticsDashboard = () => {
                     {quantitativeData.cellularMetrics.meanIntensity.toFixed(2)}
                   </Typography>
                 </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="body2" color="text.secondary">Signal-to-Noise Ratio:</Typography>
                       <Typography variant="body2" fontWeight="bold" color="text.primary">
                         {(quantitativeData.cellularMetrics?.signalToNoiseRatio || []).map(ratio =>
-                          ratio.toFixed(1)
+                      ratio.toFixed(1)
                         ).join(', ') || 'N/A'}
-                      </Typography>
-                    </Box>
+                  </Typography>
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -170,14 +170,14 @@ export const AnalyticsDashboard = () => {
                     }
                   />
                 </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Typography variant="body2" color="text.secondary">Signal Uniformity (CV):</Typography>
                       <Typography variant="body2" fontWeight="bold" color="text.primary">
                         {(quantitativeData.qualityMetrics?.signalUniformity || []).map(cv =>
-                          (cv * 100).toFixed(1) + '%'
+                      (cv * 100).toFixed(1) + '%'
                         ).join(', ') || 'N/A'}
-                      </Typography>
-                    </Box>
+                  </Typography>
+                </Box>
               </Box>
             </CardContent>
           </Card>
@@ -336,12 +336,12 @@ export const AnalyticsDashboard = () => {
                     {quantitativeData.imageMetadata.format}
                   </Typography>
                 </Box>
-                    <Box>
-                      <Typography variant="body2" color="text.secondary">Active Channels</Typography>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">Active Channels</Typography>
                       <Typography variant="body1" fontWeight="bold" color="text.primary">
                         {(quantitativeData.channels || []).length}
-                      </Typography>
-                    </Box>
+                  </Typography>
+                </Box>
               </Box>
             </CardContent>
           </Card>

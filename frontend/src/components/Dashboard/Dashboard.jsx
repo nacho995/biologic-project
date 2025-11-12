@@ -281,15 +281,15 @@ const Dashboard = () => {
       {/* Quick Stats */}
       {stats.totalImages > 0 && (
         <Card sx={{ animation: 'slideInFromBottom 0.6s ease-out 0.8s both' }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 700,
+            <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
                 mb: { xs: 2, sm: 2.5, md: 3 },
-                fontSize: { xs: '1.125rem', sm: '1.25rem', md: '1.5rem' },
-              }}
-            >
+                  fontSize: { xs: '1.125rem', sm: '1.25rem', md: '1.5rem' },
+                }}
+              >
               Quick Stats
             </Typography>
             <Grid container spacing={3}>
@@ -310,9 +310,9 @@ const Dashboard = () => {
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Total Storage Used
-                  </Typography>
-                </Box>
-              </Grid>
+              </Typography>
+              </Box>
+        </Grid>
               <Grid item xs={12} md={4}>
                 <Box sx={{ textAlign: 'center', p: 2, background: alpha('#3B82F6', 0.1), borderRadius: 2 }}>
                   <Typography variant="h4" color="info.main" fontWeight={700}>
@@ -320,12 +320,12 @@ const Dashboard = () => {
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Primary Format
-                  </Typography>
-                </Box>
+              </Typography>
+              </Box>
               </Grid>
             </Grid>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
       )}
     </Box>
   );

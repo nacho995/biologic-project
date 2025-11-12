@@ -106,7 +106,7 @@ export const CompositionPanel = () => {
           </Typography>
           <Typography variant="caption" color="text.secondary">
             Go to "Image Manager" and click the + button on images to add them here
-          </Typography>
+        </Typography>
         </Box>
       ) : (
         <List>
