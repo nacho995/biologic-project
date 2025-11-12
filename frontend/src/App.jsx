@@ -36,6 +36,8 @@ import { CompositionCanvas } from './components/CompositionCanvas/CompositionCan
 import { AnalyticsDashboard } from './components/AnalyticsDashboard/AnalyticsDashboard.jsx';
 import Dashboard from './components/Dashboard/Dashboard.jsx';
 import AppBarComponent from './components/Layout/AppBarComponent.jsx';
+import { CookieBanner } from './components/Legal/CookieBanner.jsx';
+import { Footer } from './components/Legal/Footer.jsx';
 import {
   Dashboard as DashboardIcon,
 } from '@mui/icons-material';
@@ -209,47 +211,11 @@ function App() {
         </Container>
 
         {/* Footer */}
-        <Box
-          component="footer"
-          sx={{
-            mt: 'auto',
-            py: { xs: 3, sm: 4 },
-            px: { xs: 2, sm: 3, md: 4 },
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            textAlign: 'center',
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              color: 'text.secondary',
-              fontWeight: 600,
-              fontSize: { xs: '0.8125rem', sm: '0.875rem' },
-              letterSpacing: '0.02em',
-            }}
-          >
-            Biological Image Analysis Platform © {new Date().getFullYear()} 
-            <Box 
-              component="span" 
-              sx={{ 
-                mx: 2,
-              }}
-            >
-              •
-            </Box>
-            <Box
-              component="span"
-              sx={{
-                color: 'primary.main',
-                fontWeight: 700,
-              }}
-            >
-              Enterprise Edition
-            </Box>
-          </Typography>
-        </Box>
+        <Footer />
       </Box>
+
+      {/* Cookie Banner */}
+      <CookieBanner />
     </Box>
   );
 }
