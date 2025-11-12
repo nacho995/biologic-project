@@ -1,10 +1,8 @@
 import sequelize from '../config/database.js';
-import CsvUpload from './CsvUpload.js';
 import Image from './Image.js';
 import Composition from './Composition.js';
 
 const models = {
-  CsvUpload,
   Image,
   Composition,
   sequelize,

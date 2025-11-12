@@ -5,7 +5,6 @@ import uploadRoutes from './routes/upload.routes.js';
 import imageRoutes from './routes/images.routes.js';
 import imageProcessRoutes from './routes/imageProcess.routes.js';
 import metadataRoutes from './routes/metadata.routes.js';
-import csvUploadRoutes from './routes/csvUpload.routes.js';
 import compositionRoutes from './routes/composition.routes.js';
 import mlSegmentationRoutes from './routes/mlSegmentation.routes.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.middleware.js';
@@ -59,11 +58,10 @@ app.use((req, res, next) => {
 
 app.use('/api/upload', uploadRoutes);
 app.use('/api/images', imageRoutes);
-app.use('/api/image', imageProcessRoutes); // Nuevo endpoint de procesamiento
+app.use('/api/image', imageProcessRoutes);
 app.use('/api/metadata', metadataRoutes);
-app.use('/api/csv-uploads', csvUploadRoutes);
 app.use('/api/compositions', compositionRoutes);
-app.use('/api/ml', mlSegmentationRoutes); // ML Segmentation endpoints
+app.use('/api/ml', mlSegmentationRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

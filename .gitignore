@@ -7,12 +7,13 @@ yarn-error.log*
 # Build outputs
 dist/
 build/
-*.tsbuildinfo
+*.tgz
 
-# Environment variables
+# Environment files
 .env
 .env.local
 .env.*.local
+.env.production
 
 # IDE
 .vscode/
@@ -20,31 +21,51 @@ build/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-Thumbs.db
-
-# Uploads
-backend/uploads/*
-!backend/uploads/.gitkeep
-
-# Test data (for development only)
-test_images/
-test_metadata.csv
 
 # Logs
 logs/
 *.log
 
-# Docker
-.dockerignore
-
 # Testing
 coverage/
 .nyc_output/
 
-# Temporary files
-tmp/
-temp/
+# Database
+*.db
+*.sqlite
+*.sqlite3
 
+# Uploads (local development)
+backend/uploads/images/*
+backend/uploads/thumbnails/*
+backend/uploads/csv/*
+!backend/uploads/images/.gitkeep
+!backend/uploads/thumbnails/.gitkeep
+!backend/uploads/csv/.gitkeep
+
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Documentation builds
+docs/_build/
+
+# Python (if using Python for ML services)
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+env/
+
+# Cursor specific
+.cursor/
