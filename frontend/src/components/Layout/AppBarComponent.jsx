@@ -1,29 +1,54 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
   Typography,
   Box,
   IconButton,
-  Avatar,
   TextField,
   InputAdornment,
-  Badge,
   useTheme,
   useMediaQuery,
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
   Menu as MenuIcon,
   Science as ScienceIcon,
 } from '@mui/icons-material';
+import { useImageStore } from '../../store/imageStore.js';
 
 const AppBarComponent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  const [searchQuery, setSearchQuery] = useState('');
+  const { images, setImages } = useImageStore();
+  const [allImages, setAllImages] = useState([]);
+
+  // Save all images when they're loaded
+  React.useEffect(() => {
+    if (images.length > 0 && allImages.length === 0) {
+      setAllImages(images);
+    }
+  }, [images]);
+
+  // Search functionality
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    if (!query.trim()) {
+      // Reset to all images when search is empty
+      setImages(allImages);
+      return;
+    }
+
+    // Filter images by filename
+    const filtered = allImages.filter((img) =>
+      img.originalFilename?.toLowerCase().includes(query.toLowerCase())
+    );
+    setImages(filtered);
+  };
 
   return (
     <AppBar
@@ -103,8 +128,10 @@ const AppBarComponent = () => {
         {/* Search Bar - Hidden on mobile */}
         {!isMobile && (
           <TextField
-            placeholder="Search images..."
+            placeholder="Search images by filename..."
             size="small"
+            value={searchQuery}
+            onChange={handleSearchChange}
             sx={{
               width: { sm: '200px', md: '280px', lg: '320px' },
               mr: { sm: 2, md: 3 },
@@ -130,64 +157,34 @@ const AppBarComponent = () => {
           />
         )}
 
-        {/* Action Icons */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1 } }}>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              size={isMobile ? 'small' : 'medium'}
-              sx={{
-                transition: 'all 0.2s',
-                '&:hover': { transform: 'scale(1.1)' },
-              }}
-            >
-              <SearchIcon sx={{ fontSize: { xs: 20, md: 24 } }} />
-            </IconButton>
-          )}
-
+        {/* Search Icon for Mobile */}
+        {isMobile && (
           <IconButton
             color="inherit"
-            size={isMobile ? 'small' : 'medium'}
+            size="small"
             sx={{
               transition: 'all 0.2s',
               '&:hover': { transform: 'scale(1.1)' },
             }}
-          >
-            <Badge badgeContent={3} color="error">
-              <NotificationsIcon sx={{ fontSize: { xs: 20, md: 24 } }} />
-            </Badge>
-          </IconButton>
-
-          <IconButton
-            color="inherit"
-            size={isMobile ? 'small' : 'medium'}
-            sx={{
-              transition: 'all 0.2s',
-              '&:hover': { transform: 'scale(1.1)' },
+            onClick={() => {
+              // Could open a search dialog on mobile
+              const query = prompt('Search images by filename:');
+              if (query !== null) {
+                setSearchQuery(query);
+                if (!query.trim()) {
+                  setImages(allImages);
+                } else {
+                  const filtered = allImages.filter((img) =>
+                    img.originalFilename?.toLowerCase().includes(query.toLowerCase())
+                  );
+                  setImages(filtered);
+                }
+              }
             }}
           >
-            <SettingsIcon sx={{ fontSize: { xs: 20, md: 24 } }} />
+            <SearchIcon sx={{ fontSize: 20 }} />
           </IconButton>
-
-          <Avatar
-            sx={{
-              width: { xs: 32, sm: 36, md: 40 },
-              height: { xs: 32, sm: 36, md: 40 },
-              ml: { xs: 0.5, sm: 1, md: 2 },
-              background: 'linear-gradient(135deg, #2E7D32, #66BB6A)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              fontSize: { xs: '0.875rem', md: '1rem' },
-              fontWeight: 700,
-              '&:hover': {
-                transform: 'scale(1.1)',
-                boxShadow: '0 4px 12px rgba(46, 125, 50, 0.4)',
-              },
-            }}
-          >
-            U
-          </Avatar>
-        </Box>
+        )}
       </Toolbar>
     </AppBar>
   );
