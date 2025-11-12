@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Button, Paper, Typography, LinearProgress, alpha } from '@mui/material';
 import { CloudUpload } from '@mui/icons-material';
-import { uploadCSV, uploadImages, getAllCsvUploads } from '../../services/api.js';
+import { uploadImages } from '../../services/api.js';
 import { useImageStore } from '../../store/imageStore.js';
 
 export const FileUploader = () => {
@@ -9,58 +9,6 @@ export const FileUploader = () => {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const { setImages, addImage, setCurrentImage } = useImageStore();
-
-  const handleCSVUpload = useCallback(
-    async (event) => {
-      const file = event.target.files?.[0];
-      if (!file) return;
-
-      setUploading(true);
-      setProgress(0);
-      setError(null);
-
-      try {
-        const formData = new FormData();
-        formData.append('csv', file);
-        const response = await fetch('/api/csv-uploads', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-          let errorMessage = errorData.error || `Upload failed: ${response.status}`;
-          
-          // Add details if available
-          if (errorData.details) {
-            errorMessage += `\n${errorData.details}`;
-          }
-          
-          // Add columns info if validation failed
-          if (errorData.columns && errorData.columns.length > 0) {
-            errorMessage += `\n\nYour CSV has these columns:\n- ${errorData.columns.join('\n- ')}`;
-            errorMessage += `\n\nRequired: A column named 'image_path'`;
-          }
-          
-          throw new Error(errorMessage);
-        }
-        
-        const result = await response.json();
-        setProgress(100);
-        // Reload images from the new CSV
-        if (result.id) {
-          const csvData = await getAllCsvUploads();
-          // The images will be loaded separately
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Upload failed');
-        console.error('CSV upload error:', err);
-      } finally {
-        setUploading(false);
-      }
-    },
-    [setImages]
-  );
 
   const handleImageUpload = useCallback(
     async (event) => {
