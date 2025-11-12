@@ -168,7 +168,7 @@ function App() {
                   overflow: 'hidden',
                 }}
               >
-                {viewMode === 'dashboard' && <Dashboard />}
+                {viewMode === 'dashboard' && <Dashboard onViewAllClick={() => setViewMode('images')} />}
                 {viewMode === 'single' && <ImageViewer />}
                 {viewMode === 'slider' && <SliderView />}
                 {viewMode === 'grid' && <GridView />}

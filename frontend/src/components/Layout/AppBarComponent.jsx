@@ -5,8 +5,6 @@ import {
   Typography,
   Box,
   IconButton,
-  TextField,
-  InputAdornment,
   useTheme,
   useMediaQuery,
 } from '@mui/material';
@@ -15,40 +13,14 @@ import {
   Menu as MenuIcon,
   Science as ScienceIcon,
 } from '@mui/icons-material';
+import { SearchBar } from './SearchBar.jsx';
 import { useImageStore } from '../../store/imageStore.js';
 
 const AppBarComponent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const [searchQuery, setSearchQuery] = useState('');
-  const { images, setImages } = useImageStore();
-  const [allImages, setAllImages] = useState([]);
-
-  // Save all images when they're loaded
-  React.useEffect(() => {
-    if (images.length > 0 && allImages.length === 0) {
-      setAllImages(images);
-    }
-  }, [images]);
-
-  // Search functionality
-  const handleSearchChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-
-    if (!query.trim()) {
-      // Reset to all images when search is empty
-      setImages(allImages);
-      return;
-    }
-
-    // Filter images by filename
-    const filtered = allImages.filter((img) =>
-      img.originalFilename?.toLowerCase().includes(query.toLowerCase())
-    );
-    setImages(filtered);
-  };
+  const { images, setCurrentImage } = useImageStore();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   return (
     <AppBar
@@ -126,36 +98,7 @@ const AppBarComponent = () => {
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Search Bar - Hidden on mobile */}
-        {!isMobile && (
-          <TextField
-            placeholder="Search images by filename..."
-            size="small"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            sx={{
-              width: { sm: '200px', md: '280px', lg: '320px' },
-              mr: { sm: 2, md: 3 },
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 3,
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                transition: 'all 0.3s',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                },
-                '&.Mui-focused': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                },
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: theme.palette.text.secondary, fontSize: { sm: 18, md: 20 } }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-        )}
+        {!isMobile && <SearchBar isMobile={false} theme={theme} />}
 
         {/* Search Icon for Mobile */}
         {isMobile && (
@@ -166,24 +109,29 @@ const AppBarComponent = () => {
               transition: 'all 0.2s',
               '&:hover': { transform: 'scale(1.1)' },
             }}
-            onClick={() => {
-              // Could open a search dialog on mobile
-              const query = prompt('Search images by filename:');
-              if (query !== null) {
-                setSearchQuery(query);
-                if (!query.trim()) {
-                  setImages(allImages);
-                } else {
-                  const filtered = allImages.filter((img) =>
-                    img.originalFilename?.toLowerCase().includes(query.toLowerCase())
-                  );
-                  setImages(filtered);
-                }
-              }
-            }}
+            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
           >
             <SearchIcon sx={{ fontSize: 20 }} />
           </IconButton>
+        )}
+        
+        {/* Mobile Search Dropdown */}
+        {isMobile && mobileSearchOpen && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              p: 2,
+              backgroundColor: 'background.paper',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              zIndex: 9998,
+            }}
+          >
+            <SearchBar isMobile={true} theme={theme} />
+          </Box>
         )}
       </Toolbar>
     </AppBar>

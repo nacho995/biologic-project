@@ -8,7 +8,7 @@ import {
 import MetricCard from './MetricCard';
 import { useImageStore } from '../../store/imageStore.js';
 
-const Dashboard = () => {
+const Dashboard = ({ onViewAllClick }) => {
   const { images } = useImageStore();
   const [stats, setStats] = useState({
     totalImages: 0,
@@ -192,6 +192,7 @@ const Dashboard = () => {
             </Typography>
             <Typography
               variant="body2"
+              onClick={() => onViewAllClick && onViewAllClick()}
               sx={{
                 color: '#42A5F5',
                 fontWeight: 700,
