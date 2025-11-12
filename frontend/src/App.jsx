@@ -29,7 +29,7 @@ import { ZoomControls } from './components/ZoomControls/ZoomControls.jsx';
 import { MetadataPanel } from './components/MetadataPanel/MetadataPanel.jsx';
 import { SliderView } from './components/SliderView/SliderView.jsx';
 import { GridView } from './components/GridView/GridView.jsx';
-import { MultiDimensionalViewer } from './components/MultiDimensionalViewer/MultiDimensionalViewer.jsx';
+import { VolumetricViewer3D } from './components/VolumetricViewer3D/VolumetricViewer3D.jsx';
 import { ImageManager } from './components/ImageManager/ImageManager.jsx';
 import { CompositionPanel } from './components/CompositionPanel/CompositionPanel.jsx';
 import { CompositionCanvas } from './components/CompositionCanvas/CompositionCanvas.jsx';
@@ -47,7 +47,7 @@ const navigationItems = [
   { id: 'single', label: 'Single View', icon: <ImageIcon /> },
   { id: 'slider', label: 'Slider', icon: <SliderIcon /> },
   { id: 'grid', label: 'Grid View', icon: <GridIcon /> },
-  { id: 'multi', label: 'Multi-Dimensional', icon: <MultiIcon /> },
+  { id: 'multi', label: '3D Volumetric', icon: <MultiIcon /> },
   { id: 'analytics', label: 'Analytics', icon: <AnalyticsIcon /> },
   { id: 'images', label: 'Image Manager', icon: <ImageManagerIcon /> },
   { id: 'composition', label: 'Composition', icon: <CompositionIcon /> },
@@ -172,7 +172,7 @@ function App() {
                 {viewMode === 'single' && <ImageViewer />}
                 {viewMode === 'slider' && <SliderView />}
                 {viewMode === 'grid' && <GridView />}
-                {viewMode === 'multi' && <MultiDimensionalViewer />}
+                {viewMode === 'multi' && <VolumetricViewer3D />}
                 {viewMode === 'analytics' && <AnalyticsDashboard />}
                 {viewMode === 'images' && <ImageManager />}
                 {viewMode === 'composition' && <CompositionCanvas />}
