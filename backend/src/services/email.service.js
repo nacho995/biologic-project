@@ -28,12 +28,16 @@ const initializeEmailService = () => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      // Increase timeout for slower connections
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-      // Don't verify on startup - it can timeout
-      // Verification will happen on first email send
+      pool: true, // Use pooled connections for better performance
+      maxConnections: 5,
+      maxMessages: 100,
+      rateDelta: 1000,
+      rateLimit: 5,
+      tls: {
+        rejectUnauthorized: false
+      },
+      debug: false, // Set to true only for debugging
+      logger: false,
     });
     
     console.log('✅ Email service transporter created (will verify on first send)');
