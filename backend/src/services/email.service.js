@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 // Email service will only work if EMAIL_USER and EMAIL_PASS are configured
 let transporter = null;
 
-const initializeEmailService = async () => {
+const initializeEmailService = () => {
   try {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       console.warn('⚠️ Email service not configured (EMAIL_USER or EMAIL_PASS missing)');
@@ -28,19 +28,13 @@ const initializeEmailService = async () => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      // Don't verify on startup - it can timeout
+      // Verification will happen on first email send
     });
     
-    // Verify connection (non-blocking)
-    transporter.verify((error) => {
-      if (error) {
-        console.error('❌ Email service verification failed:', error.message);
-      } else {
-        console.log('✅ Email service configured and verified');
-      }
-    });
+    console.log('✅ Email service transporter created (will verify on first send)');
   } catch (error) {
     console.error('❌ Error initializing email service:', error.message);
-    console.error('Full error:', error);
     transporter = null;
   }
 };
