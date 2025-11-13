@@ -3,9 +3,24 @@ import nodemailer from 'nodemailer';
 // Email service will only work if EMAIL_USER and EMAIL_PASS are configured
 let transporter = null;
 
-try {
-  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-    transporter = nodemailer.createTransporter({
+const initializeEmailService = async () => {
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('⚠️ Email service not configured (EMAIL_USER or EMAIL_PASS missing)');
+      return;
+    }
+
+    // Debug: Check what nodemailer exports
+    console.log('📧 Nodemailer type:', typeof nodemailer);
+    console.log('📧 Nodemailer.createTransport type:', typeof nodemailer.createTransport);
+    
+    // Correct method name is createTransport (not createTransporter)
+    if (typeof nodemailer.createTransport !== 'function') {
+      console.error('❌ nodemailer.createTransport is not a function');
+      return;
+    }
+
+    transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.EMAIL_PORT) || 587,
       secure: false,
@@ -14,13 +29,24 @@ try {
         pass: process.env.EMAIL_PASS,
       },
     });
-    console.log('✅ Email service configured');
-  } else {
-    console.warn('⚠️ Email service not configured (EMAIL_USER or EMAIL_PASS missing)');
+    
+    // Verify connection (non-blocking)
+    transporter.verify((error) => {
+      if (error) {
+        console.error('❌ Email service verification failed:', error.message);
+      } else {
+        console.log('✅ Email service configured and verified');
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error initializing email service:', error.message);
+    console.error('Full error:', error);
+    transporter = null;
   }
-} catch (error) {
-  console.error('❌ Error initializing email service:', error.message);
-}
+};
+
+// Initialize email service
+initializeEmailService();
 
 export const sendVerificationEmail = async (email, token, name) => {
   if (!transporter) {
