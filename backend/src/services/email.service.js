@@ -75,10 +75,18 @@ export const sendVerificationEmail = async (email, token, name) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    console.log('📤 Attempting to send verification email to:', email);
+    const info = await transporter.sendMail(mailOptions);
     console.log('✅ Verification email sent to:', email);
+    console.log('📧 Message ID:', info.messageId);
+    console.log('📧 Response:', info.response);
   } catch (error) {
-    console.error('❌ Error sending verification email:', error);
+    console.error('❌ Error sending verification email:');
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Error response:', error.response);
+    console.error('Error responseCode:', error.responseCode);
+    console.error('Full error:', JSON.stringify(error, null, 2));
     throw new Error('Failed to send verification email');
   }
 };
@@ -116,10 +124,18 @@ export const sendPasswordResetEmail = async (email, token, name) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    console.log('📤 Attempting to send password reset email to:', email);
+    const info = await transporter.sendMail(mailOptions);
     console.log('✅ Password reset email sent to:', email);
+    console.log('📧 Message ID:', info.messageId);
+    console.log('📧 Response:', info.response);
   } catch (error) {
-    console.error('❌ Error sending password reset email:', error);
+    console.error('❌ Error sending password reset email:');
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    console.error('Error response:', error.response);
+    console.error('Error responseCode:', error.responseCode);
+    console.error('Full error:', JSON.stringify(error, null, 2));
     throw new Error('Failed to send password reset email');
   }
 };
