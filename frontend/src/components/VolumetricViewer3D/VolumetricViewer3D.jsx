@@ -33,12 +33,47 @@ import { getSlice } from '../../services/api.js';
 
 export const VolumetricViewer3D = () => {
   const { currentImageId, images } = useImageStore();
-  const { colors } = useColorStore();
-  const { zoom, setZoom, handleWheel, zoomIn, zoomOut, resetZoom } = useZoom();
+  const { palette, adjustments } = useColorStore();
+  const { zoom, setZoom, zoomIn, zoomOut, resetZoom } = useZoom();
   const { panX, panY, isDragging, startDrag, onDrag, endDrag, resetPan } = usePan();
   
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
+  const wheelListenerRef = useRef(null);
+  const zoomRef = useRef(zoom);
+  
+  // Mantener zoomRef actualizado
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+  
+  // Callback ref para el container - se ejecuta CUANDO el elemento se monta
+  const containerRef = useCallback((element) => {
+    // Limpiar listener anterior
+    if (wheelListenerRef.current) {
+      wheelListenerRef.current.element.removeEventListener('wheel', wheelListenerRef.current.handler);
+      wheelListenerRef.current = null;
+    }
+    
+    if (!element) return;
+
+    const handleWheel = (e) => {
+      console.log('🖱️ Wheel event! deltaY:', e.deltaY);
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      const currentZoom = zoomRef.current;
+      console.log('📊 Current zoom:', currentZoom, 'Delta:', delta);
+      
+      const newZoom = Math.max(0.1, Math.min(3, currentZoom + delta));
+      console.log('🔍 Setting new zoom:', newZoom);
+      setZoom(newZoom);
+};
+
+    element.addEventListener('wheel', handleWheel, { passive: false });
+    wheelListenerRef.current = { element, handler: handleWheel };
+  }, [setZoom]);
   
   const [sliceIndex, setSliceIndex] = useState(0);
   const [maxSlices, setMaxSlices] = useState(1);
@@ -120,16 +155,21 @@ export const VolumetricViewer3D = () => {
     // Create a copy of the original data
     const originalData = new Uint8ClampedArray(data);
     
-    // Calculate BLACK_THRESHOLD (25th percentile of grayscale values)
+    // Calculate BLACK_THRESHOLD (20th percentile - filter background)
     const grayscaleValues = [];
     for (let i = 0; i < data.length; i += 4) {
-      grayscaleValues.push(originalData[i]); // R channel (assuming grayscale)
+      const val = originalData[i];
+      if (val > 0) { // Only non-black pixels
+        grayscaleValues.push(val);
+      }
     }
     grayscaleValues.sort((a, b) => a - b);
-    const BLACK_THRESHOLD = grayscaleValues[Math.floor(grayscaleValues.length * 0.25)];
+    // Use 20th percentile or a minimum of 30 (whichever is higher)
+    const BLACK_THRESHOLD = Math.max(30, grayscaleValues[Math.floor(grayscaleValues.length * 0.2)] || 30);
     
-    const activeColors = colors && Array.isArray(colors) ? colors.filter(c => c.enabled) : [];
-    const hasActiveColors = activeColors.length > 0;
+    // Get active colors from adjustments and palette
+    const activeAdjustments = adjustments && Array.isArray(adjustments) ? adjustments.filter(adj => adj.enabled) : [];
+    const hasActiveColors = activeAdjustments.length > 0;
 
     for (let i = 0; i < data.length; i += 4) {
       const grayValue = originalData[i];
@@ -147,13 +187,17 @@ export const VolumetricViewer3D = () => {
         // Apply color mapping
         let r = 0, g = 0, b = 0;
         
-        activeColors.forEach(color => {
+        activeAdjustments.forEach(adj => {
+          // Find the color in palette
+          const color = palette.find(c => c.id === adj.colorId);
+          if (!color) return;
+          
           // Apply contrast adjustment
-          const contrastFactor = (color.contrast || 100) / 100;
+          const contrastFactor = (adj.contrast || 100) / 100;
           const adjusted = Math.min(255, grayValue * contrastFactor);
           
           // Apply color mapping
-          const rgb = hexToRgb(color.color);
+          const rgb = hexToRgb(color.hex);
           const intensity = adjusted / 255;
           
           r += intensity * rgb.r;
@@ -176,7 +220,7 @@ export const VolumetricViewer3D = () => {
     }
     
     return imageData;
-  }, [colors, brightness, opacity]);
+  }, [adjustments, palette, brightness, opacity]);
 
   // Render current slice or 3D projection
   useEffect(() => {
@@ -192,7 +236,7 @@ export const VolumetricViewer3D = () => {
     } else {
       renderVolume(ctx, canvas);
     }
-  }, [sliceImages, sliceIndex, viewMode, zoom, panX, panY, rotation, brightness, contrast, opacity, colors]);
+  }, [sliceImages, sliceIndex, viewMode, zoom, panX, panY, rotation, brightness, contrast, opacity, adjustments]);
 
   // Render single slice
   const renderSlice = (ctx, canvas) => {
@@ -365,11 +409,6 @@ export const VolumetricViewer3D = () => {
     endDrag();
   };
   
-  const handleCanvasWheel = (e) => {
-    e.preventDefault();
-    handleWheel(e);
-  };
-
   const resetView = () => {
     setRotation({ x: 0, y: 0, z: 0 });
     resetZoom();
@@ -444,11 +483,11 @@ export const VolumetricViewer3D = () => {
             <Typography variant="subtitle2" fontWeight={600} color="text.primary">
               Rendering Mode
             </Typography>
-            <ToggleButtonGroup
-              value={viewMode}
-              exclusive
-              onChange={(_, newMode) => newMode && setViewMode(newMode)}
-              size="small"
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(_, newMode) => newMode && setViewMode(newMode)}
+            size="small"
               sx={{
                 '& .MuiToggleButton-root': {
                   color: 'text.secondary',
@@ -462,10 +501,10 @@ export const VolumetricViewer3D = () => {
               }}
             >
               <ToggleButton value="slice">Slice</ToggleButton>
-              <ToggleButton value="volume">Volume</ToggleButton>
-              <ToggleButton value="mip">MIP</ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
+            <ToggleButton value="volume">Volume</ToggleButton>
+            <ToggleButton value="mip">MIP</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
 
           {/* Slice Navigation (for slice mode) */}
           {viewMode === 'slice' && (
@@ -528,11 +567,11 @@ export const VolumetricViewer3D = () => {
           <Box>
             <Typography variant="caption" color="text.secondary" gutterBottom>
               Opacity: {(opacity * 100).toFixed(0)}%
-            </Typography>
-            <Slider
-              value={opacity}
-              min={0}
-              max={1}
+          </Typography>
+          <Slider
+            value={opacity}
+            min={0}
+            max={1}
               step={0.05}
               onChange={(_, value) => setOpacity(value)}
               valueLabelDisplay="auto"
@@ -563,10 +602,10 @@ export const VolumetricViewer3D = () => {
                 value={contrast}
                 min={0.5}
                 max={2}
-                step={0.1}
+            step={0.1}
                 onChange={(_, value) => setContrast(value)}
-                valueLabelDisplay="auto"
-              />
+            valueLabelDisplay="auto"
+          />
             </Box>
           </Box>
 
@@ -584,12 +623,14 @@ export const VolumetricViewer3D = () => {
 
       {/* Canvas */}
       <Paper
+        ref={containerRef}
         elevation={0}
         sx={{
           position: 'relative',
           height: 600,
-          backgroundColor: '#000000',
-          border: '1px solid rgba(0, 0, 0, 0.12)',
+          backgroundColor: 'transparent',
+          backgroundImage: 'none',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           overflow: 'hidden',
           cursor: viewMode === 'volume' || viewMode === 'mip' ? 'grab' : 'default',
           '&:active': {
@@ -623,12 +664,12 @@ export const VolumetricViewer3D = () => {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
-          onWheel={handleCanvasWheel}
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'contain',
             cursor: isDragging ? 'grabbing' : 'grab',
+            backgroundColor: 'transparent',
           }}
         />
 

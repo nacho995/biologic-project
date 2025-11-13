@@ -1,10 +1,12 @@
 import sequelize from '../config/database.js';
 import Image from './Image.js';
 import Composition from './Composition.js';
+import User from './User.js';
 
 const models = {
   Image,
   Composition,
+  User: User(sequelize),
   sequelize,
 };
 

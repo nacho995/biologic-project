@@ -8,6 +8,7 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "init-db": "node src/scripts/init-db.js",
+    "create-demo-users": "node src/scripts/create-demo-users.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src --ext .js",
@@ -26,7 +27,10 @@
     "uuid": "^9.0.1",
     "sequelize": "^6.35.2",
     "pg": "^8.11.3",
-    "pg-hstore": "^2.3.4"
+    "pg-hstore": "^2.3.4",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "nodemailer": "^6.9.7"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

@@ -11,6 +11,7 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  CircularProgress,
 } from '@mui/material';
 import {
   Image as ImageIcon,
@@ -21,7 +22,12 @@ import {
   Layers as CompositionIcon,
   CloudUpload as UploadIcon,
   Analytics as AnalyticsIcon,
+  Dashboard as DashboardIcon,
 } from '@mui/icons-material';
+import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import { AuthPage } from './components/Auth/AuthPage.jsx';
+import { VerifyEmail } from './components/Auth/VerifyEmail.jsx';
+import { ResetPassword } from './components/Auth/ResetPassword.jsx';
 import { FileUploader } from './components/FileUploader/FileUploader.jsx';
 import { ImageViewer } from './components/ImageViewer/ImageViewer.jsx';
 import { ColorControlPanel } from './components/ColorControlPanel/ColorControlPanel.jsx';
@@ -38,9 +44,6 @@ import Dashboard from './components/Dashboard/Dashboard.jsx';
 import AppBarComponent from './components/Layout/AppBarComponent.jsx';
 import { CookieBanner } from './components/Legal/CookieBanner.jsx';
 import { Footer } from './components/Legal/Footer.jsx';
-import {
-  Dashboard as DashboardIcon,
-} from '@mui/icons-material';
 
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
@@ -53,7 +56,8 @@ const navigationItems = [
   { id: 'composition', label: 'Composition', icon: <CompositionIcon /> },
 ];
 
-function App() {
+function AppContent() {
+  const { isAuthenticated, loading, login } = useAuth();
   const [viewMode, setViewMode] = useState('dashboard');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -61,6 +65,41 @@ function App() {
   const handleViewModeChange = (newValue) => {
     setViewMode(newValue);
   };
+
+  // Check for special routes
+  const params = new URLSearchParams(window.location.search);
+  const verifyToken = params.get('token');
+  const isVerifyEmailRoute = window.location.pathname.includes('/verify-email') || params.has('token');
+  const isResetPasswordRoute = window.location.pathname.includes('/reset-password');
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+        }}
+      >
+        <CircularProgress size={60} />
+      </Box>
+    );
+  }
+
+  // Handle email verification
+  if (isVerifyEmailRoute && verifyToken) {
+    return <VerifyEmail token={verifyToken} onVerified={login} />;
+  }
+
+  // Handle password reset
+  if (isResetPasswordRoute && verifyToken) {
+    return <ResetPassword token={verifyToken} />;
+  }
+
+  if (!isAuthenticated) {
+    return <AuthPage onLogin={login} />;
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -217,6 +256,14 @@ function App() {
       {/* Cookie Banner */}
       <CookieBanner />
     </Box>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

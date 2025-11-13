@@ -7,19 +7,24 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
+  Button,
+  Chip,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   Menu as MenuIcon,
   Science as ScienceIcon,
+  Logout as LogoutIcon,
 } from '@mui/icons-material';
 import { SearchBar } from './SearchBar.jsx';
 import { useImageStore } from '../../store/imageStore.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const AppBarComponent = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { images, setCurrentImage } = useImageStore();
+  const { user, logout } = useAuth();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   return (
@@ -100,19 +105,75 @@ const AppBarComponent = () => {
         {/* Search Bar - Hidden on mobile */}
         {!isMobile && <SearchBar isMobile={false} theme={theme} />}
 
+        {/* User Info & Logout */}
+        {!isMobile && user && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 3 }}>
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {user.name}
+              </Typography>
+              <Chip
+                label={user.role}
+                size="small"
+                sx={{
+                  height: 20,
+                  fontSize: '0.625rem',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  backgroundColor: 
+                    user.role === 'admin' ? 'error.main' :
+                    user.role === 'worker' ? 'success.main' :
+                    'info.main',
+                }}
+              />
+            </Box>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<LogoutIcon />}
+              onClick={logout}
+              sx={{
+                color: 'white',
+                borderColor: 'rgba(255, 255, 255, 0.3)',
+                textTransform: 'none',
+                '&:hover': {
+                  borderColor: 'white',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                },
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
+        )}
+
         {/* Search Icon for Mobile */}
         {isMobile && (
-          <IconButton
-            color="inherit"
-            size="small"
-            sx={{
-              transition: 'all 0.2s',
-              '&:hover': { transform: 'scale(1.1)' },
-            }}
-            onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-          >
-            <SearchIcon sx={{ fontSize: 20 }} />
-          </IconButton>
+          <>
+            <IconButton
+              color="inherit"
+              size="small"
+              sx={{
+                transition: 'all 0.2s',
+                '&:hover': { transform: 'scale(1.1)' },
+              }}
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+            >
+              <SearchIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+            <IconButton
+              color="inherit"
+              size="small"
+              onClick={logout}
+              sx={{
+                transition: 'all 0.2s',
+                '&:hover': { transform: 'scale(1.1)' },
+                ml: 1,
+              }}
+            >
+              <LogoutIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+          </>
         )}
         
         {/* Mobile Search Dropdown */}

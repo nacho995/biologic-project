@@ -129,9 +129,9 @@ export const ImageManager = () => {
             </Typography>
           </Alert>
 
-          <Grid container spacing={2}>
-            {images.map((image) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={image.id}>
+        <Grid container spacing={2}>
+          {images.map((image) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={image.id}>
                 <Card
                   sx={{
                     height: '100%',
@@ -147,16 +147,16 @@ export const ImageManager = () => {
                     },
                   }}
                 >
-                  <CardMedia
-                    component="img"
+                <CardMedia
+                  component="img"
                     height="180"
-                    image={`/api/images/${image.id}/thumbnail`}
-                    alt={image.originalFilename}
+                  image={`/api/images/${image.id}/thumbnail`}
+                  alt={image.originalFilename}
                     sx={{
                       objectFit: 'contain',
                       backgroundColor: 'rgba(0,0,0,0.05)',
                     }}
-                  />
+                />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography 
                       variant="body2" 
@@ -164,9 +164,9 @@ export const ImageManager = () => {
                       fontWeight={600}
                       title={image.originalFilename}
                     >
-                      {image.originalFilename}
-                    </Typography>
-                  </CardContent>
+                    {image.originalFilename}
+                  </Typography>
+                </CardContent>
                   <CardActions 
                     sx={{ 
                       justifyContent: 'space-between', 
@@ -177,7 +177,7 @@ export const ImageManager = () => {
                       zIndex: 100,
                     }}
                   >
-                    <IconButton
+                  <IconButton
                       size="medium"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -203,7 +203,7 @@ export const ImageManager = () => {
                           e.stopPropagation();
                           handleAddToComposition(image.id, image.originalFilename);
                         }}
-                        title="Add to Composition"
+                    title="Add to Composition"
                         sx={{
                           color: 'secondary.main',
                           border: '2px solid',
@@ -215,10 +215,10 @@ export const ImageManager = () => {
                             transform: 'scale(1.2)',
                           },
                         }}
-                      >
-                        <Add />
-                      </IconButton>
-                      <IconButton
+                  >
+                    <Add />
+                  </IconButton>
+                  <IconButton
                         size="medium"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -234,15 +234,15 @@ export const ImageManager = () => {
                             transform: 'scale(1.2)',
                           },
                         }}
-                      >
-                        <Delete />
-                      </IconButton>
+                  >
+                    <Delete />
+                  </IconButton>
                     </Box>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
         </>
       )}
 
