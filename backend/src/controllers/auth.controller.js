@@ -91,6 +91,9 @@ export const verifyEmail = async (req, res) => {
   try {
     const { token } = req.query;
 
+    console.log('📧 Email verification attempt');
+    console.log('Token received:', token ? `${token.substring(0, 10)}...` : 'NO TOKEN');
+
     if (!token) {
       return res.status(400).json({ error: 'Verification token is required' });
     }
@@ -101,18 +104,26 @@ export const verifyEmail = async (req, res) => {
       },
     });
 
+    console.log('User found:', user ? `${user.email} (expires: ${user.verificationTokenExpires})` : 'NO USER FOUND');
+    console.log('Current time:', new Date().toISOString());
+
     if (!user) {
+      console.log('❌ Invalid token - no user found with this token');
       return res.status(400).json({ error: 'Invalid or expired verification token' });
     }
 
-    if (user.verificationTokenExpires < new Date()) {
+    if (user.verificationTokenExpires && user.verificationTokenExpires < new Date()) {
+      console.log('❌ Token expired');
       return res.status(400).json({ error: 'Verification token has expired' });
     }
 
+    console.log('✅ Token valid, verifying email');
     user.emailVerified = true;
     user.verificationToken = null;
     user.verificationTokenExpires = null;
     await user.save();
+
+    console.log('✅ Email verified successfully for:', user.email);
 
     // Send welcome email
     try {
@@ -213,11 +224,14 @@ export const forgotPassword = async (req, res) => {
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const resetExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = resetExpires;
     await user.save();
+    
+    console.log('🔑 Reset token generated for:', email);
+    console.log('⏰ Token expires at:', resetExpires.toISOString());
 
     // Send reset email
     try {
@@ -243,6 +257,10 @@ export const resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
 
+    console.log('🔑 Reset password attempt');
+    console.log('Token received:', token ? `${token.substring(0, 10)}...` : 'NO TOKEN');
+    console.log('Password length:', password ? password.length : 'NO PASSWORD');
+
     if (!token || !password) {
       return res.status(400).json({ error: 'Token and new password are required' });
     }
@@ -257,18 +275,26 @@ export const resetPassword = async (req, res) => {
       },
     });
 
+    console.log('User found:', user ? `${user.email} (expires: ${user.resetPasswordExpires})` : 'NO USER FOUND');
+    console.log('Current time:', new Date().toISOString());
+
     if (!user) {
+      console.log('❌ Invalid token - no user found with this token');
       return res.status(400).json({ error: 'Invalid or expired reset token' });
     }
 
     if (user.resetPasswordExpires < new Date()) {
+      console.log('❌ Token expired');
       return res.status(400).json({ error: 'Reset token has expired' });
     }
 
+    console.log('✅ Token valid, updating password');
     user.password = password;
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
     await user.save();
+
+    console.log('✅ Password reset successful for:', user.email);
 
     res.json({
       message: 'Password reset successful! You can now login with your new password.',

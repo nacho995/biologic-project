@@ -95,43 +95,42 @@ jobs:
           fi
 
   # Deploy to Production (only on main branch)
-  # DISABLED: Configure GitHub Secrets to enable automatic deployments
-  # deploy-production:
-  #   needs: [backend-test, frontend-test]
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #   runs-on: ubuntu-latest
+  deploy-production:
+    needs: [backend-test, frontend-test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Deploy to Vercel (Frontend)
-  #       uses: amondnet/vercel-action@v25
-  #       with:
-  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-  #         working-directory: ./frontend
-  #         vercel-args: '--prod'
+      - name: Deploy to Vercel (Frontend)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+          vercel-args: '--prod'
 
-  #     - name: Trigger Render Deploy (Backend)
-  #       run: |
-  #         if [ -n "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
-  #           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
-  #           echo "✅ Backend deployment triggered on Render"
-  #         else
-  #           echo "⚠️ RENDER_DEPLOY_HOOK not configured"
-  #         fi
+      - name: Trigger Render Deploy (Backend)
+        run: |
+          if [ -n "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+            echo "✅ Backend deployment triggered on Render"
+          else
+            echo "⚠️ RENDER_DEPLOY_HOOK not configured"
+          fi
 
-  #     - name: Deployment Summary
-  #       run: |
-  #         echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
-  #         echo "" >> $GITHUB_STEP_SUMMARY
-  #         echo "✅ Frontend deployed to Vercel" >> $GITHUB_STEP_SUMMARY
-  #         echo "✅ Backend deployment triggered on Render" >> $GITHUB_STEP_SUMMARY
-  #         echo "" >> $GITHUB_STEP_SUMMARY
-  #         echo "### URLs" >> $GITHUB_STEP_SUMMARY
-  #         echo "- Frontend: https://your-app.vercel.app" >> $GITHUB_STEP_SUMMARY
-  #         echo "- Backend: https://biologic-backend.onrender.com" >> $GITHUB_STEP_SUMMARY
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Frontend deployed to Vercel" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Backend deployment triggered on Render" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: https://your-app.vercel.app" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: https://biologic-backend.onrender.com" >> $GITHUB_STEP_SUMMARY
 
   # Notify on Failure
   notify-failure:
