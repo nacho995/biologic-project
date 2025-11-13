@@ -37,32 +37,44 @@ export const register = async (req, res) => {
       });
     }
 
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    // Check if email service is configured
+    const emailServiceConfigured = process.env.EMAIL_USER && process.env.EMAIL_PASS;
+
+    // Generate verification token only if email service is configured
+    const verificationToken = emailServiceConfigured ? crypto.randomBytes(32).toString('hex') : null;
+    const verificationTokenExpires = emailServiceConfigured ? new Date(Date.now() + 24 * 60 * 60 * 1000) : null;
 
     const user = await User.create({
       email,
       password,
       name,
       role: 'viewer',
+      emailVerified: !emailServiceConfigured, // Auto-verify if email service not configured
       verificationToken,
       verificationTokenExpires,
     });
 
-    // Send verification email
-    try {
-      await sendVerificationEmail(email, verificationToken, name);
-    } catch (emailError) {
-      console.error('Error sending verification email:', emailError);
+    // Send verification email only if service is configured
+    if (emailServiceConfigured) {
+      try {
+        await sendVerificationEmail(email, verificationToken, name);
+      } catch (emailError) {
+        console.error('Error sending verification email:', emailError);
+      }
     }
 
+    const token = generateToken(user);
+
     res.status(201).json({
-      message: 'Registration successful! Please check your email to verify your account.',
+      message: emailServiceConfigured 
+        ? 'Registration successful! Please check your email to verify your account.'
+        : 'Registration successful! You can now log in.',
+      token,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
         emailVerified: user.emailVerified,
       },
     });
@@ -155,7 +167,11 @@ export const login = async (req, res) => {
       });
     }
 
-    if (!user.emailVerified) {
+    // Check if email service is configured
+    const emailServiceConfigured = process.env.EMAIL_USER && process.env.EMAIL_PASS;
+
+    // Only require email verification if email service is configured
+    if (emailServiceConfigured && !user.emailVerified) {
       return res.status(403).json({ 
         error: 'Please verify your email before logging in',
         emailVerified: false,

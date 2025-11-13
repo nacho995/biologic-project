@@ -106,16 +106,27 @@ export const AuthPage = ({ onLogin }) => {
         throw new Error(data.error || 'Registration failed');
       }
 
-      setSuccess('Registration successful! Please check your email to verify your account.');
-      setEmail('');
-      setPassword('');
-      setName('');
-      
-      // Switch to login tab after 3 seconds
-      setTimeout(() => {
-        setTabValue(0);
-        setSuccess('');
-      }, 3000);
+      // If token is provided, user is auto-verified, log them in
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        if (onLogin) {
+          onLogin(data.user);
+        }
+      } else {
+        // Email verification required
+        setSuccess(data.message || 'Registration successful! Please check your email to verify your account.');
+        setEmail('');
+        setPassword('');
+        setName('');
+        
+        // Switch to login tab after 3 seconds
+        setTimeout(() => {
+          setTabValue(0);
+          setSuccess('');
+        }, 3000);
+      }
     } catch (err) {
       setError(err.message || 'Failed to register. Please try again.');
     } finally {
