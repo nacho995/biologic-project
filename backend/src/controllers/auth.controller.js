@@ -312,6 +312,8 @@ export const resendVerification = async (req, res) => {
   try {
     const { email } = req.body;
 
+    console.log('🔄 Resend verification request for:', email);
+
     if (!email) {
       return res.status(400).json({ error: 'Email is required' });
     }
@@ -319,16 +321,21 @@ export const resendVerification = async (req, res) => {
     const user = await User.findOne({ where: { email } });
     
     if (!user) {
+      console.log('❌ User not found:', email);
       return res.status(404).json({ error: 'User not found' });
     }
 
     if (user.emailVerified) {
+      console.log('⚠️ Email already verified:', email);
       return res.status(400).json({ error: 'Email is already verified' });
     }
 
     // Generate new verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    console.log('🔑 New verification token generated for:', email);
+    console.log('⏰ Token expires at:', verificationTokenExpires.toISOString());
 
     user.verificationToken = verificationToken;
     user.verificationTokenExpires = verificationTokenExpires;
@@ -337,6 +344,7 @@ export const resendVerification = async (req, res) => {
     // Send verification email
     try {
       await sendVerificationEmail(user.email, verificationToken, user.name);
+      console.log('✅ Verification email resent successfully to:', email);
     } catch (emailError) {
       console.error('Error sending verification email:', emailError);
       return res.status(500).json({ error: 'Failed to send verification email' });

@@ -30,6 +30,8 @@ export const AuthPage = ({ onLogin }) => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showResendVerification, setShowResendVerification] = useState(false);
+  const [resendEmail, setResendEmail] = useState('');
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -60,6 +62,8 @@ export const AuthPage = ({ onLogin }) => {
       if (!response.ok) {
         if (data.emailVerified === false) {
           setError('Please verify your email before logging in. Check your inbox for the verification link.');
+          setShowResendVerification(true);
+          setResendEmail(email);
         } else {
           throw new Error(data.error || 'Login failed');
         }
@@ -168,6 +172,35 @@ export const AuthPage = ({ onLogin }) => {
     }
   };
 
+  const handleResendVerification = async () => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/resend-verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: resendEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to resend verification email');
+      }
+
+      setSuccess('Verification email sent! Please check your inbox (including spam folder).');
+      setShowResendVerification(false);
+    } catch (err) {
+      setError(err.message || 'Failed to resend verification email. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -227,6 +260,17 @@ export const AuthPage = ({ onLogin }) => {
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
               {error}
+              {showResendVerification && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={handleResendVerification}
+                  disabled={loading}
+                  sx={{ mt: 2, display: 'block' }}
+                >
+                  {loading ? <CircularProgress size={20} /> : 'Resend Verification Email'}
+                </Button>
+              )}
             </Alert>
           )}
 
